@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,11 +133,23 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="OpenGLRenderingEngine.h" />
+    <ClInclude Include="PlatformDependent\Windows\Utils.h" />
+    <ClInclude Include="RenderingEngine\Camera.h" />
+    <ClInclude Include="RenderingEngine\Material.h" />
+    <ClInclude Include="RenderingEngine\Mesh.h" />
+    <ClInclude Include="RenderingEngine\OpenGLRenderingEngine.h" />
+    <ClInclude Include="RenderingEngine\OpenGLErrorDetector.h" />
+    <ClInclude Include="RenderingEngine\RenderableMesh.h" />
+    <ClInclude Include="RenderingEngine\Transformation.h" />
+    <ClInclude Include="RenderingEngine\Vertex.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGLRenderingEngine.cpp" />
+    <ClCompile Include="PlatformDependent\Windows\Utils.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLRenderingEngine.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLErrorDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGLRenderingEngine.rc" />

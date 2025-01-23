@@ -2,7 +2,13 @@
 
 namespace RenderingEngine {
 	class RenderableMesh {
-	public:
+		
+		bool isEnabled;
 
+	public:
+		RenderableMesh() : isEnabled(true) {}
+
+		bool isEnabled() const { return isEnabled; }
+		void setEnabled(bool isEnabled) { this->isEnabled = isEnabled; }
 	};
 }

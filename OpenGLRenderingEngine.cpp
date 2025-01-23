@@ -3,6 +3,8 @@
 
 #include "framework.h"
 #include "OpenGLRenderingEngine.h"
+#include <PlatformDependent/Windows/Utils.h>
+#include "Resource.h"
 
 #define MAX_LOADSTRING 100
 
@@ -19,12 +21,33 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <vector>
+
+#define CONSOLE_BUFFER_SIZE 1024
+
+using namespace PlatformDependent::Windows::Utils;
+
+static bool setupConsolse(HINSTANCE hInstance) {
+    if (!createNewConsole(CONSOLE_BUFFER_SIZE)) {
+        showDialog(
+            getString(hInstance, IDS_GENERIC_ERROR_TITLE).get(),
+            getString(hInstance, IDS_ERROR_OPENING_CONSOLE).get()
+        );
+        return false;
+    }
+
+    return true;
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+    if (!setupConsolse(hInstance)) {
+        return EXIT_FAILURE;
+    }
+
     GLFWwindow* window;
 
     if (!glfwInit()) {
