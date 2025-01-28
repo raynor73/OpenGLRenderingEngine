@@ -13,8 +13,8 @@ namespace RenderingEngine {
             VERTEX_NORMAL_COMPONENTS +
             VERTEX_UV_COMPONENTS;
 
-		virtual const glm::vec3& position() =  0;
-		virtual const glm::vec3 normal() = 0;
-		virtual const glm::vec2 uv() = 0;
+		virtual const glm::vec3 &position() =  0;
+		virtual const glm::vec3 &normal() = 0;
+		virtual const glm::vec2 &uv() = 0;
 	};
 }

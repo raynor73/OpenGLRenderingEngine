@@ -3,11 +3,10 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include <string>
-#include <game_engine/without_generated_methods.h>
 
-namespace GameEngine
+namespace RenderingEngine
 {
-class OpenGLErrorDetector : public WithoutGeneratedMethods
+class OpenGLErrorDetector
 {
     bool m_isOpenGLErrorDetected;
     GLchar* m_infoBuffer;

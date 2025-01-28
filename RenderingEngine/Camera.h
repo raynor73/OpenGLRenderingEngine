@@ -6,7 +6,7 @@ namespace RenderingEngine {
 	class Camera {
 	public:
 		virtual float zNear() = 0;
-		virtual void zFar() = 0;
+		virtual float zFar() = 0;
 		virtual const glm::vec4& clearColor() = 0;
 		virtual const glm::mat4& viewMatrix() = 0;
 		virtual const glm::mat4& projectionMatrix() = 0;

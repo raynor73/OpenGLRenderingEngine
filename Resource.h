@@ -10,6 +10,7 @@
 #define IDS_GENERIC_ERROR_TITLE         104
 #define IDM_EXIT                        105
 #define IDS_ERROR_OPENING_CONSOLE       105
+#define IDS_ERROR_INITIALIZING_GLEW     106
 #define IDI_OPENGLRENDERINGENGINE       107
 #define IDI_SMALL                       108
 #define IDC_OPENGLRENDERINGENGINE       109

@@ -2,9 +2,15 @@
 //
 
 #include "framework.h"
-#include "OpenGLRenderingEngine.h"
+#include "main.h"
 #include <PlatformDependent/Windows/Utils.h>
 #include "Resource.h"
+#include <RenderingEngine/OpenGLRenderingEngine.h>
+#include <PlatformDependent/Windows/WindowsLogger.h>
+#include <Research/Mesh.h>
+#include <Research/Transformation.h>
+#include <Research/Material.h>
+#include <Research/PerspectiveCamera.h>
 
 #define MAX_LOADSTRING 100
 
@@ -25,7 +31,9 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 #define CONSOLE_BUFFER_SIZE 1024
 
+using namespace PlatformDependent::Windows;
 using namespace PlatformDependent::Windows::Utils;
+using namespace RenderingEngine;
 
 static bool setupConsolse(HINSTANCE hInstance) {
     if (!createNewConsole(CONSOLE_BUFFER_SIZE)) {
@@ -48,6 +56,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return EXIT_FAILURE;
     }
 
+    L::setLogger(std::make_shared<WindowsLogger>());
+
     GLFWwindow* window;
 
     if (!glfwInit()) {
@@ -63,11 +73,45 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     glfwMakeContextCurrent(window);
 
-    glClearColor(0, 0.5, 0, 0);
+    if (glewInit() != GLEW_OK) {
+        showDialog(
+            getString(hInstance, IDS_GENERIC_ERROR_TITLE).get(),
+            getString(hInstance, IDS_ERROR_INITIALIZING_GLEW).get()
+        );
+        return -1;
+    }
+
+    std::shared_ptr<OpenGLErrorDetector> openGLErrorDetector = std::make_shared<OpenGLErrorDetector>();
+    OpenGLRenderingEngine openGLRenderingEngine(openGLErrorDetector);
+    Research::Mesh mesh {
+        {
+            Research::Vertex { { 0, 0.5, -1 }, { 0, 0, 1 }, { 0, 0 } },
+            Research::Vertex { { 0.5, -0.5, -1 }, { 0, 0, 1 }, { 0, 0 } },
+            Research::Vertex { { -0.5, -0.5, -1 }, { 0, 0, 1 }, { 0, 0 } }
+        },
+        { 0, 1, 2 }
+    };
+    std::shared_ptr<Research::Transformation> transform = std::make_shared<Research::Transformation>();
+    std::shared_ptr<Research::Material> material = std::make_shared<Research::Material>(glm::vec4(1));
+    openGLRenderingEngine.createRenderableMesh(
+        mesh,
+        transform,
+        material
+    );
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    Research::PerspectiveCamera camera { 
+        0.1f,
+        1000,
+        90,
+        float(windowWidth), 
+        float(windowHeight)
+    };
+
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        openGLRenderingEngine.render(camera);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

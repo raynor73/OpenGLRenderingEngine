@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -102,7 +102,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -118,7 +118,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -132,24 +132,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="OpenGLRenderingEngine.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Research\Constants.h" />
+    <ClInclude Include="Research\Material.h" />
+    <ClInclude Include="Research\Mesh.h" />
     <ClInclude Include="PlatformDependent\Windows\Utils.h" />
+    <ClInclude Include="PlatformDependent\Windows\WindowsLogger.h" />
     <ClInclude Include="RenderingEngine\Camera.h" />
     <ClInclude Include="RenderingEngine\Material.h" />
     <ClInclude Include="RenderingEngine\Mesh.h" />
     <ClInclude Include="RenderingEngine\OpenGLRenderingEngine.h" />
     <ClInclude Include="RenderingEngine\OpenGLErrorDetector.h" />
     <ClInclude Include="RenderingEngine\RenderableMesh.h" />
+    <ClInclude Include="RenderingEngine\RenderableMeshInternal.h" />
     <ClInclude Include="RenderingEngine\Transformation.h" />
     <ClInclude Include="RenderingEngine\Vertex.h" />
+    <ClInclude Include="Research\PerspectiveCamera.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Research\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenGLRenderingEngine.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="PlatformDependent\Windows\Utils.cpp" />
+    <ClCompile Include="PlatformDependent\Windows\WindowsLogger.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLRenderingEngine.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLErrorDetector.cpp" />
+    <ClCompile Include="RenderingEngine\RenderableMesh.cpp" />
+    <ClCompile Include="Research\PerspectiveCamera.cpp" />
+    <ClCompile Include="Research\Transformation.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGLRenderingEngine.rc" />

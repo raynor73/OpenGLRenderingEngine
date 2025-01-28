@@ -1,14 +1,23 @@
 #pragma once
 
+#include <cstdint>
+
 namespace RenderingEngine {
 	class RenderableMesh {
 		
-		bool isEnabled;
+		bool m_isEnabled;
+		uint32_t m_id;
+
+		static uint32_t s_nextId;
 
 	public:
-		RenderableMesh() : isEnabled(true) {}
+		RenderableMesh() : m_isEnabled(true), m_id(s_nextId++) {}
 
-		bool isEnabled() const { return isEnabled; }
-		void setEnabled(bool isEnabled) { this->isEnabled = isEnabled; }
+		bool isEnabled() const { return m_isEnabled; }
+		void setEnabled(bool isEnabled) { m_isEnabled = isEnabled; }
+
+		uint32_t id() const { return m_id; }
+
+		virtual bool isValid() const = 0;
 	};
 }

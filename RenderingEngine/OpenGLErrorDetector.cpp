@@ -1,8 +1,8 @@
 #include "OpenGLErrorDetector.h"
 #include <sstream>
-#include <game_engine/logger.h>
+#include <Logger.h>
 
-using namespace GameEngine;
+using namespace RenderingEngine;
 using namespace std;
 
 OpenGLErrorDetector::OpenGLErrorDetector() : m_isOpenGLErrorDetected(false) {
