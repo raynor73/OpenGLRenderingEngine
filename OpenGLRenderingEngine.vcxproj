@@ -134,7 +134,10 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="PlatformDependent\Windows\WindowsReadOnlyFs.h" />
     <ClInclude Include="RenderingEngine\IboInfo.h" />
+    <ClInclude Include="RenderingEngine\OpenGLShaderSourceLoader.h" />
+    <ClInclude Include="RenderingEngine\ReadOnlyFs.h" />
     <ClInclude Include="Research\Constants.h" />
     <ClInclude Include="Research\Material.h" />
     <ClInclude Include="Research\Mesh.h" />
@@ -159,6 +162,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlatformDependent\Windows\Utils.cpp" />
     <ClCompile Include="PlatformDependent\Windows\WindowsLogger.cpp" />
+    <ClCompile Include="PlatformDependent\Windows\WindowsReadOnlyFs.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLRenderingEngine.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLErrorDetector.cpp" />
     <ClCompile Include="RenderingEngine\RenderableMesh.cpp" />
