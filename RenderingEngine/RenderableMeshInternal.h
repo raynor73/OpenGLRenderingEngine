@@ -2,17 +2,21 @@
 
 #include "RenderableMesh.h"
 #include <GL/glew.h>
+#include "IboInfo.h"
 
 namespace RenderingEngine {
 class RenderableMeshInternal : public RenderableMesh {
 
-	GLuint m_buffer;
+	GLuint m_vbo;
+	IboInfo m_iboInfo;
+
 	bool m_isValid;
 
 public:
-	RenderableMeshInternal(GLuint buffer) : m_buffer(buffer), m_isValid(true) {}
+	RenderableMeshInternal(GLuint vbo, const IboInfo &iboInfo) : m_vbo(vbo), m_iboInfo(iboInfo), m_isValid(true) {}
 
-	GLuint buffer() const { return m_buffer; }
+	GLuint vbo() const { return m_vbo; }
+	const IboInfo &iboInfo() const { return m_iboInfo; }
 	bool isValid() const override { return m_isValid; }
 	void setValid(bool isValid) { m_isValid = isValid; }
 };

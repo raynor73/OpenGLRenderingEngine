@@ -134,6 +134,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="RenderingEngine\IboInfo.h" />
     <ClInclude Include="Research\Constants.h" />
     <ClInclude Include="Research\Material.h" />
     <ClInclude Include="Research\Mesh.h" />
