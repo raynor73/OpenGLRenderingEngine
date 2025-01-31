@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,6 +122,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)ThirdParty\include;$(ProjectDir)ThirdParty\glew\include;$(ProjectDir)ThirdParty\glfw\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +138,10 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="PlatformDependent\Windows\WindowsReadOnlyFs.h" />
     <ClInclude Include="RenderingEngine\IboInfo.h" />
+    <ClInclude Include="RenderingEngine\OpenGLShaderProgramContainer.h" />
     <ClInclude Include="RenderingEngine\OpenGLShaderSourceLoader.h" />
+    <ClInclude Include="RenderingEngine\OpenGLShaderSourcePreprocessor.h" />
+    <ClInclude Include="RenderingEngine\OpenGLShadersRepository.h" />
     <ClInclude Include="RenderingEngine\ReadOnlyFs.h" />
     <ClInclude Include="Research\Constants.h" />
     <ClInclude Include="Research\Material.h" />
@@ -165,6 +170,10 @@
     <ClCompile Include="PlatformDependent\Windows\WindowsReadOnlyFs.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLRenderingEngine.cpp" />
     <ClCompile Include="RenderingEngine\OpenGLErrorDetector.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLShaderProgramContainer.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLShaderSourceLoader.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLShaderSourcePreprocessor.cpp" />
+    <ClCompile Include="RenderingEngine\OpenGLShadersRepository.cpp" />
     <ClCompile Include="RenderingEngine\RenderableMesh.cpp" />
     <ClCompile Include="Research\PerspectiveCamera.cpp" />
     <ClCompile Include="Research\Transformation.h" />
@@ -175,6 +184,12 @@
   <ItemGroup>
     <Image Include="OpenGLRenderingEngine.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\AmbientFragmentShader.glsl" />
+    <None Include="Shaders\AmbientVertexShader.glsl" />
+    <None Include="Shaders\DirectionalLightFragmentShader.glsl" />
+    <None Include="Shaders\DirectionalLightVertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

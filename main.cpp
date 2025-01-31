@@ -11,6 +11,8 @@
 #include <Research/Transformation.h>
 #include <Research/Material.h>
 #include <Research/PerspectiveCamera.h>
+#include <filesystem>
+#include <PlatformDependent/Windows/WindowsReadOnlyFs.h>
 
 #define MAX_LOADSTRING 100
 
@@ -34,6 +36,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 using namespace PlatformDependent::Windows;
 using namespace PlatformDependent::Windows::Utils;
 using namespace RenderingEngine;
+using namespace std;
 
 static bool setupConsolse(HINSTANCE hInstance) {
     if (!createNewConsole(CONSOLE_BUFFER_SIZE)) {
@@ -56,7 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return EXIT_FAILURE;
     }
 
-    L::setLogger(std::make_shared<WindowsLogger>());
+    L::setLogger(make_shared<WindowsLogger>());
 
     GLFWwindow* window;
 
@@ -81,8 +84,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return -1;
     }
 
-    std::shared_ptr<OpenGLErrorDetector> openGLErrorDetector = std::make_shared<OpenGLErrorDetector>();
-    OpenGLRenderingEngine openGLRenderingEngine(openGLErrorDetector);
+    auto openGLErrorDetector = make_shared<OpenGLErrorDetector>();
+    auto readOnlyFs = make_shared<WindowsReadOnlyFs>();
+    auto shaderSourceLoader = make_shared<OpenGLShaderSourceLoader>(readOnlyFs);
+    auto shaderSourcePreprocessor = make_shared<OpenGLShaderSourcePreprocessor>(shaderSourceLoader);
+    auto shaderRepository = make_shared<OpenGLShadersRepository>(openGLErrorDetector);
+
+    OpenGLRenderingEngine openGLRenderingEngine(
+        openGLErrorDetector,
+        shaderRepository,
+        shaderSourcePreprocessor
+    );
     Research::Mesh mesh {
         {
             Research::Vertex { { 0, 0.5, -1 }, { 0, 0, 1 }, { 0, 0 } },
@@ -91,8 +103,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         },
         { 0, 1, 2 }
     };
-    std::shared_ptr<Research::Transformation> transform = std::make_shared<Research::Transformation>();
-    std::shared_ptr<Research::Material> material = std::make_shared<Research::Material>(glm::vec4(1));
+    shared_ptr<Research::Transformation> transform = make_shared<Research::Transformation>();
+    shared_ptr<Research::Material> material = make_shared<Research::Material>(glm::vec4(1));
     openGLRenderingEngine.createRenderableMesh(
         mesh,
         transform,

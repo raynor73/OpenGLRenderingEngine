@@ -4,20 +4,47 @@
 #include <sstream>
 
 using namespace RenderingEngine;
+using namespace std;
 
-std::string OpenGLRenderingEngine::LOG_TAG = "OpenGLRenderingEngine";
+const string OpenGLRenderingEngine::LOG_TAG = "OpenGLRenderingEngine";
+const string OpenGLRenderingEngine::AMBIENT_VERTEX_SHADER_NAME = "AmbientVertexShader";
+const string OpenGLRenderingEngine::AMBIENT_FRAGMENT_SHADER_NAME = "AmbientFragmentShader";
+const string OpenGLRenderingEngine::AMBIENT_SHADER_PROGRAM_NAME = "AmbientShader";
 
-std::shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
+OpenGLRenderingEngine::OpenGLRenderingEngine(
+    shared_ptr<OpenGLErrorDetector> openGLErrorDetector,
+    shared_ptr<OpenGLShadersRepository> shaderRepository,
+    shared_ptr<OpenGLShaderSourcePreprocessor> shaderSourcePreprocessor
+) : m_openGLErrorDetector(openGLErrorDetector), 
+    m_shaderRepository(shaderRepository),
+    m_shaderSourcePreprocessor (shaderSourcePreprocessor)
+{
+    m_shaderRepository->createVertexShader(
+        AMBIENT_VERTEX_SHADER_NAME,
+        m_shaderSourcePreprocessor->loadShaderSource("./AmbientVertexShader.glsl")
+    );
+    m_shaderRepository->createFragmentShader(
+        AMBIENT_FRAGMENT_SHADER_NAME,
+        m_shaderSourcePreprocessor->loadShaderSource("./AmbientFragmentShader.glsl")
+    );
+    m_shaderRepository->createShaderProgram(
+        AMBIENT_SHADER_PROGRAM_NAME,
+        AMBIENT_VERTEX_SHADER_NAME,
+        AMBIENT_FRAGMENT_SHADER_NAME
+    );
+}
+
+shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
     Mesh &mesh,
-    std::shared_ptr<Transformation> transformation,
-    std::shared_ptr<Material> material
+    shared_ptr<Transformation> transformation,
+    shared_ptr<Material> material
 ) {
     GLuint vbo;
     glGenBuffers(1, &vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    std::vector<float> vertexData(mesh.numberOfVertices() * Vertex::VERTEX_COMPONENTS);
+    vector<float> vertexData(mesh.numberOfVertices() * Vertex::VERTEX_COMPONENTS);
 
     for (uintptr_t i = 0; i < mesh.numberOfVertices(); i++) {
         vertexData[    i * Vertex::VERTEX_COMPONENTS] = mesh.vertexAt(i).position().x;
@@ -60,7 +87,7 @@ std::shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
 
     m_openGLErrorDetector->checkOpenGLErrors("createRenderableMesh#2");
 
-    std::shared_ptr<RenderableMeshInternal> renderableMesh = std::make_shared<RenderableMeshInternal>(vbo, iboInfo);
+    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(vbo, iboInfo);
 	m_renderableMeshes.emplace(renderableMesh->id(), renderableMesh);
 
     return renderableMesh;
@@ -68,7 +95,7 @@ std::shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
 
 void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
     if (m_renderableMeshes.count(id) == 0) {
-        std::stringstream ss;
+        stringstream ss;
         ss << "freeRenderableMesh: mesh with id: " << id << " not found";
         L::e(LOG_TAG, ss.str());
         return;

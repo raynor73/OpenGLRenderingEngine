@@ -6,7 +6,7 @@ namespace PlatformDependent
 {
 namespace Windows
 {
-class WindowsReadOnlyFs : RenderingEngine::ReadOnlyFs {
+class WindowsReadOnlyFs : public RenderingEngine::ReadOnlyFs {
 public:
     bool isFileExists(const std::string &path) override;
 

@@ -90,6 +90,15 @@
     <ClInclude Include="PlatformDependent\Windows\WindowsReadOnlyFs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderingEngine\OpenGLShaderSourcePreprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingEngine\OpenGLShadersRepository.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingEngine\OpenGLShaderProgramContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -122,6 +131,18 @@
     <ClCompile Include="PlatformDependent\Windows\WindowsReadOnlyFs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenderingEngine\OpenGLShaderSourceLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingEngine\OpenGLShaderSourcePreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingEngine\OpenGLShaderProgramContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingEngine\OpenGLShadersRepository.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGLRenderingEngine.rc">
@@ -135,5 +156,11 @@
     <Image Include="OpenGLRenderingEngine.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\AmbientFragmentShader.glsl" />
+    <None Include="Shaders\AmbientVertexShader.glsl" />
+    <None Include="Shaders\DirectionalLightFragmentShader.glsl" />
+    <None Include="Shaders\DirectionalLightVertexShader.glsl" />
   </ItemGroup>
 </Project>
