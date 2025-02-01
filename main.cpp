@@ -110,13 +110,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         },
         { 0, 1, 2 }
     };
-    shared_ptr<Research::Transformation> transform = make_shared<Research::Transformation>();
-    shared_ptr<Research::Material> material = make_shared<Research::Material>(glm::vec4(1));
-    openGLRenderingEngine.createRenderableMesh(
-        mesh,
-        transform,
-        material
-    );
+    auto transform = make_shared<Research::Transformation>();
+    auto material = make_shared<Research::Material>(glm::vec4(1));
+    openGLRenderingEngine.createRenderableMesh(mesh);
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     Research::PerspectiveCamera camera { 
@@ -130,7 +126,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        //openGLRenderingEngine.render(camera);
+        openGLRenderingEngine.render(
+            camera,
+            *transform,
+            *material,
+            glm::vec3(1)
+        );
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

@@ -2,6 +2,9 @@
 #include "RenderableMeshInternal.h"
 #include <Logger.h>
 #include <sstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 using namespace RenderingEngine;
 using namespace std;
@@ -34,11 +37,7 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
     );
 }
 
-shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
-    Mesh &mesh,
-    shared_ptr<Transformation> transformation,
-    shared_ptr<Material> material
-) {
+shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mesh) {
     GLuint vbo;
     glGenBuffers(1, &vbo);
 
@@ -112,10 +111,75 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
     m_openGLErrorDetector->checkOpenGLErrors("freeRenderableMesh");
 }
 
-void OpenGLRenderingEngine::render(Camera &camera) {
+void OpenGLRenderingEngine::render(
+    Camera &camera,
+    Transformation &transformation,
+    Material &material,
+    const glm::vec3 &ambient
+) {
+    if (m_openGLErrorDetector->isOpenGLErrorDetected()) {
+        return;
+    }
+
     auto clearColor = camera.clearColor();
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    for (auto meshEntry : m_renderableMeshes) {
+        auto mesh = meshEntry.second;
+        auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
 
+        glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->iboInfo().ibo);
+
+        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#1");
+
+        glVertexAttribPointer(
+            shader->positionAttribute(),
+            Vertex::VERTEX_POSITION_COMPONENTS,
+            GL_FLOAT,
+            false,
+            Vertex::VERTEX_COMPONENTS * sizeof(float),
+            reinterpret_cast<void *>(0)
+        );
+        glEnableVertexAttribArray(shader->positionAttribute());
+        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#2");
+
+        auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation.position());
+        modelMatrix *= glm::toMat4(transformation.rotation());
+        modelMatrix = glm::scale(modelMatrix, transformation.scale());
+
+        glm::mat4x4 mvpMatrix = camera.projectionMatrix() * camera.viewMatrix() * modelMatrix;
+        glUniformMatrix4fv(shader->mvpMatrixUniform(), 1, false, &mvpMatrix[0][0]);
+
+        glUniform4f(
+            shader->diffuseColorUniform(),
+            material.diffuseColor().r,
+            material.diffuseColor().g,
+            material.diffuseColor().b,
+            material.diffuseColor().a
+        );
+
+        glUniform3f(
+            shader->ambientColorUniform(),
+            ambient.r,
+            ambient.g,
+            ambient.b
+        );
+        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#3");
+
+        glDrawElements(
+            GL_TRIANGLES,
+            mesh->iboInfo().numberOfIndices,
+            GL_UNSIGNED_SHORT,
+            reinterpret_cast<void *>(0)
+        );
+        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#4");
+
+        glEnableVertexAttribArray(shader->positionAttribute());
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
+    }
 }
