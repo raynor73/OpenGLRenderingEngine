@@ -1,3 +1,5 @@
+#version 150
+
 attribute vec3 positionAttribute;
 //attribute vec2 uvAttribute;
 

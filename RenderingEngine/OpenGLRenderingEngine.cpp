@@ -21,11 +21,11 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
 {
     m_shaderRepository->createVertexShader(
         AMBIENT_VERTEX_SHADER_NAME,
-        m_shaderSourcePreprocessor->loadShaderSource("./AmbientVertexShader.glsl")
+        m_shaderSourcePreprocessor->loadShaderSource("./Shaders/AmbientVertexShader.glsl")
     );
     m_shaderRepository->createFragmentShader(
         AMBIENT_FRAGMENT_SHADER_NAME,
-        m_shaderSourcePreprocessor->loadShaderSource("./AmbientFragmentShader.glsl")
+        m_shaderSourcePreprocessor->loadShaderSource("./Shaders/AmbientFragmentShader.glsl")
     );
     m_shaderRepository->createShaderProgram(
         AMBIENT_SHADER_PROGRAM_NAME,

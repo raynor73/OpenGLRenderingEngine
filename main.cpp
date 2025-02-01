@@ -1,6 +1,8 @@
 // OpenGLRenderingEngine.cpp : Defines the entry point for the application.
 //
-
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <vector>
 #include "framework.h"
 #include "main.h"
 #include <PlatformDependent/Windows/Utils.h>
@@ -27,10 +29,6 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <vector>
-
 #define CONSOLE_BUFFER_SIZE 1024
 
 using namespace PlatformDependent::Windows;
@@ -50,6 +48,11 @@ static bool setupConsolse(HINSTANCE hInstance) {
     return true;
 }
 
+static void glfwError(int id, const char *description)
+{
+    std::cout << description << std::endl;
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -63,10 +66,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     GLFWwindow* window;
 
+    glfwSetErrorCallback(&glfwError);
     if (!glfwInit()) {
         return -1;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -123,7 +130,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        openGLRenderingEngine.render(camera);
+        //openGLRenderingEngine.render(camera);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
