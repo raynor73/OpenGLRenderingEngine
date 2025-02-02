@@ -12,8 +12,8 @@ namespace Research
 		float m_fov;
 		glm::vec4 m_clearColor;
 
-		float m_viewportWidth;
-		float m_viewportHeight;
+		uint32_t m_viewportWidth;
+		uint32_t m_viewportHeight;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;
@@ -26,17 +26,16 @@ namespace Research
 
 	public:
 		PerspectiveCamera(
-				float zNear,
-				float zFar,
-				float fov,
-				float viewportWidth,
-				float viewportHeight
+			float zNear,
+			float zFar,
+			float fov,
+			uint32_t viewportWidth,
+			uint32_t viewportHeight
 		);
 
 		void setPosition(const glm::vec3 &position);
 		void setRotation(const glm::quat &rotation);
-		void setViewportWidth(float width);
-		void setViewportHeight(float height);
+		void setViewportSize(uint32_t width, uint32_t height);
 
 		float zNear() override { return m_zNear; }
 		float zFar() override { return m_zFar; }

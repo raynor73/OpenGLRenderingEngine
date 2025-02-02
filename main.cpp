@@ -116,8 +116,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         0.1f,
         1000,
         90,
-        float(windowWidth), 
-        float(windowHeight)
+        uint32_t(windowWidth), 
+        uint32_t(windowHeight)
     };
 
     ImGui::CreateContext();
@@ -133,6 +133,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         ImGui::ShowDemoWindow();
 
         /* Render here */
+        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        glViewport(0, 0, windowWidth, windowHeight);
+
+        camera.setViewportSize(windowWidth, windowHeight);
         openGLRenderingEngine.render(
             camera,
             glm::vec3(1)

@@ -7,8 +7,8 @@ PerspectiveCamera::PerspectiveCamera(
 	float zNear,
 	float zFar,
 	float fov,
-	float viewportWidth,
-	float viewportHeight
+	uint32_t viewportWidth,
+	uint32_t viewportHeight
 ) : m_zNear(zNear),
 	m_zFar(zFar),
 	m_fov(fov),
@@ -25,7 +25,7 @@ PerspectiveCamera::PerspectiveCamera(
 void PerspectiveCamera::calculateProjectionMatrix() {
 	m_projectionMatrix = glm::perspective(
 		m_fov,
-		m_viewportWidth / m_viewportHeight,
+		float(m_viewportWidth) / m_viewportHeight,
 		m_zNear,
 		m_zFar
 	);
@@ -54,12 +54,10 @@ void PerspectiveCamera::setRotation(const glm::quat &rotation) {
 	calculateViewMatrix();
 }
 
-void PerspectiveCamera::setViewportWidth(float width) {
-	m_viewportWidth = width;
-	calculateProjectionMatrix();
-}
-
-void PerspectiveCamera::setViewportHeight(float height) {
-	m_viewportHeight = height;
-	calculateProjectionMatrix();
+void PerspectiveCamera::setViewportSize(uint32_t width, uint32_t height) {
+	if (m_viewportWidth != width || m_viewportHeight != height) {
+		m_viewportWidth = width;
+		m_viewportHeight = height;
+		calculateProjectionMatrix();
+	}
 }
