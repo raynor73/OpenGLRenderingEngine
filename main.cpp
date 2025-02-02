@@ -27,6 +27,8 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 #define CONSOLE_BUFFER_SIZE 1024
+#define INITIAL_WINDOW_WIDTH 1440
+#define INITIAL_WINDOW_HEIGHT 900
 
 using namespace PlatformDependent::Windows;
 using namespace PlatformDependent::Windows::Utils;
@@ -71,7 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "OpenGL Rendering Engine", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -101,13 +103,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     );
     Research::Mesh mesh {
         {
-            Research::Vertex { { 0, 0.5, -1 }, { 0, 0, 1 }, { 0, 0 } },
-            Research::Vertex { { 0.5, -0.5, -1 }, { 0, 0, 1 }, { 0, 0 } },
-            Research::Vertex { { -0.5, -0.5, -1 }, { 0, 0, 1 }, { 0, 0 } }
+            Research::Vertex { { 0, 0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
+            Research::Vertex { { 0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
+            Research::Vertex { { -0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } }
         },
         { 0, 1, 2 }
     };
     auto transformation = make_shared<Research::Transformation>();
+    transformation->setPosition(glm::vec3(0, 0, -1));
     auto material = make_shared<Research::Material>(glm::vec4(1));
     openGLRenderingEngine.createRenderableMesh(mesh, transformation, material);
     int windowWidth, windowHeight;
@@ -125,18 +128,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
+    float yAngle = 0.0f;
+    float xAngle = 0.0f;
+    float zAngle = 0.0f;
     while (!glfwWindowShouldClose(window))
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
+
+        //ImGui::ShowDemoWindow();
+        ImGui::Begin("Hello, world!");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::SliderAngle("Y angle", &yAngle);
+        ImGui::SliderAngle("X angle", &xAngle);
+        ImGui::SliderAngle("Z angle", &zAngle);
+        ImGui::End();
 
         /* Render here */
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
         camera.setViewportSize(windowWidth, windowHeight);
+        transformation->setRotation(glm::quat(glm::vec3(xAngle, yAngle, zAngle)));
         openGLRenderingEngine.render(
             camera,
             glm::vec3(1)
