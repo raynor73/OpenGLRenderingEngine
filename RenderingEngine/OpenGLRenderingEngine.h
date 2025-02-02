@@ -24,7 +24,20 @@ namespace RenderingEngine {
 		static const std::string AMBIENT_FRAGMENT_SHADER_NAME;
 		static const std::string AMBIENT_SHADER_PROGRAM_NAME;
 
+		static const std::string DIRECTIONAL_LIGHT_VERTEX_SHADER_NAME;
+		static const std::string DIRECTIONAL_LIGHT_FRAGMENT_SHADER_NAME;
+		static const std::string DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME;
+
 		static const GLuint POSITION_ATTRIBUTE_LOCATION;
+		static const GLuint NORMAL_ATTRIBUTE_LOCATION;
+
+		void initShader(
+			const std::string &vertexShaderName,
+			const std::string &vertexShaderPath,
+			const std::string &fragmentShaderName,
+			const std::string &fragmentShaderPath,
+			const std::string &shaderProgramName
+		);
 
 	public:
 		OpenGLRenderingEngine(

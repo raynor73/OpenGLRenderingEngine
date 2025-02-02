@@ -10,10 +10,17 @@ using namespace RenderingEngine;
 using namespace std;
 
 const string OpenGLRenderingEngine::LOG_TAG = "OpenGLRenderingEngine";
+
 const string OpenGLRenderingEngine::AMBIENT_VERTEX_SHADER_NAME = "AmbientVertexShader";
 const string OpenGLRenderingEngine::AMBIENT_FRAGMENT_SHADER_NAME = "AmbientFragmentShader";
 const string OpenGLRenderingEngine::AMBIENT_SHADER_PROGRAM_NAME = "AmbientShader";
+
+const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_VERTEX_SHADER_NAME = "DirectionalLightVertexShader";
+const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_FRAGMENT_SHADER_NAME = "DirectionalLightFragmentShader";
+const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME = "DirectionalLightShader";
+
 const GLuint OpenGLRenderingEngine::POSITION_ATTRIBUTE_LOCATION = 0;
+const GLuint OpenGLRenderingEngine::NORMAL_ATTRIBUTE_LOCATION = 1;
 
 OpenGLRenderingEngine::OpenGLRenderingEngine(
     shared_ptr<OpenGLErrorDetector> openGLErrorDetector,
@@ -23,18 +30,46 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
     m_shaderRepository(shaderRepository),
     m_shaderSourcePreprocessor (shaderSourcePreprocessor)
 {
-    m_shaderRepository->createVertexShader(
+    initShader(
         AMBIENT_VERTEX_SHADER_NAME,
-        m_shaderSourcePreprocessor->loadShaderSource("./Shaders/AmbientVertexShader.glsl")
+        "./Shaders/AmbientVertexShader.glsl",
+        AMBIENT_FRAGMENT_SHADER_NAME,
+        "./Shaders/AmbientFragmentShader.glsl",
+        AMBIENT_SHADER_PROGRAM_NAME
+    );
+
+    initShader(
+        DIRECTIONAL_LIGHT_VERTEX_SHADER_NAME,
+        "./Shaders/DirectionalLightVertexShader.glsl",
+        DIRECTIONAL_LIGHT_FRAGMENT_SHADER_NAME,
+        "./Shaders/DirectionalLightFragmentShader.glsl",
+        DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME
+    );
+
+    glEnable(GL_DEPTH_TEST);
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+}
+
+void OpenGLRenderingEngine::initShader(
+    const std::string &vertexShaderName,
+    const std::string &vertexShaderPath,
+    const std::string &fragmentShaderName,
+    const std::string &fragmentShaderPath,
+    const std::string &shaderProgramName
+) {
+    m_shaderRepository->createVertexShader(
+        vertexShaderName,
+        m_shaderSourcePreprocessor->loadShaderSource(vertexShaderPath)
     );
     m_shaderRepository->createFragmentShader(
-        AMBIENT_FRAGMENT_SHADER_NAME,
-        m_shaderSourcePreprocessor->loadShaderSource("./Shaders/AmbientFragmentShader.glsl")
+        fragmentShaderName,
+        m_shaderSourcePreprocessor->loadShaderSource(fragmentShaderPath)
     );
     m_shaderRepository->createShaderProgram(
-        AMBIENT_SHADER_PROGRAM_NAME,
-        AMBIENT_VERTEX_SHADER_NAME,
-        AMBIENT_FRAGMENT_SHADER_NAME
+        shaderProgramName,
+        vertexShaderName,
+        fragmentShaderName
     );
 }
 
@@ -84,6 +119,16 @@ shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
         reinterpret_cast<void *>(0)
     );
     glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
+
+    glVertexAttribPointer(
+        NORMAL_ATTRIBUTE_LOCATION,
+        Vertex::VERTEX_NORMAL_COMPONENTS,
+        GL_FLOAT,
+        false,
+        Vertex::VERTEX_COMPONENTS * sizeof(float),
+        reinterpret_cast<void *>(Vertex::VERTEX_POSITION_COMPONENTS * sizeof(float))
+    );
+    glEnableVertexAttribArray(NORMAL_ATTRIBUTE_LOCATION);
 
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
@@ -137,17 +182,17 @@ void OpenGLRenderingEngine::render(
 
     auto clearColor = camera.clearColor();
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto mvMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
     for (auto meshEntry : m_renderableMeshes) {
+        auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
+
         auto mesh = meshEntry.second;
         auto material = mesh->material();
         auto transformation = mesh->transformation();
-
-        auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
-        glUseProgram(shader->shaderProgram());
 
         glBindVertexArray(mesh->vao());
 
@@ -172,7 +217,6 @@ void OpenGLRenderingEngine::render(
             ambient.g,
             ambient.b
         );
-        //m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#3");
 
         glDrawElements(
             GL_TRIANGLES,
@@ -180,7 +224,6 @@ void OpenGLRenderingEngine::render(
             GL_UNSIGNED_SHORT,
             reinterpret_cast<void *>(0)
         );
-        //m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#4");
 
         glBindVertexArray(0);
 

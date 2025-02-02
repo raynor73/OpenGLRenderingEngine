@@ -1,3 +1,5 @@
+#version 330
+
 precision mediump float;
 
 struct DirectionalLight {
@@ -6,19 +8,13 @@ struct DirectionalLight {
 };
 
 uniform DirectionalLight directionalLightUniform;
-uniform sampler2D textureUniform;
+//uniform sampler2D textureUniform;
 uniform vec4 diffuseColorUniform;
 //uniform sampler2D shadowMapUniform;
 //uniform bool receiveShadows;
-uniform bool useDiffuseColorUniform;
-uniform vec4 topColorUniform;
-uniform vec4 bottomColorUniform;
-uniform bool isGradientUniform;
+//uniform bool useDiffuseColorUniform;
 
-uniform vec3 topPointUniform;
-uniform vec3 bottomPointUniform;
-
-varying vec2 uvVarying;
+//varying vec2 uvVarying;
 //varying vec4 shadowMapUvVariying;
 varying vec3 normalVarying;
 varying vec3 positionVarying;
@@ -41,25 +37,13 @@ void main() {
 }
 
 void calcColor(out vec4 resultColor) {
-    if (isGradientUniform) {
-        vec4 directionalLightColor =
-            vec4(directionalLightUniform.color, 1) *
-            dot(normalize(normalVarying), -directionalLightUniform.direction);
-
-        resultColor = mix(
-            topColorUniform * directionalLightColor,
-            bottomColorUniform * directionalLightColor,
-            smoothstep(topPointUniform.y, bottomPointUniform.y, positionVarying.y)
-        );
-    } else {
-        if (useDiffuseColorUniform) {
-            resultColor =
-            diffuseColorUniform * vec4(directionalLightUniform.color, 1.0) *
-            dot(normalize(normalVarying), -directionalLightUniform.direction);
-        } else {
-            resultColor =
-            texture2D(textureUniform, uvVarying) * vec4(directionalLightUniform.color, 1.0) *
-            dot(normalize(normalVarying), -directionalLightUniform.direction);
-        }
-    }
+    //if (useDiffuseColorUniform) {
+    resultColor =
+        diffuseColorUniform * vec4(directionalLightUniform.color, 1.0) *
+        dot(normalize(normalVarying), -directionalLightUniform.direction);
+    /*} else {
+        resultColor =
+        texture2D(textureUniform, uvVarying) * vec4(directionalLightUniform.color, 1.0) *
+        dot(normalize(normalVarying), -directionalLightUniform.direction);
+    }*/
 }

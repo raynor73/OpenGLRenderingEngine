@@ -11,10 +11,6 @@ class OpenGLShaderProgramContainer
 
     GLuint m_shaderProgram;
 
-    //GLint m_positionAttribute;
-    //GLint m_normalAttribute;
-    //GLint m_uvAttribute;
-
     GLint m_mvpMatrixUniform;
     /*GLint m_modelMatrixUniform;
     GLint m_mvMatrixUniform;

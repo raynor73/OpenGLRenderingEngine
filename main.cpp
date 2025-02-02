@@ -107,7 +107,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             Research::Vertex { { 0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
             Research::Vertex { { -0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } }
         },
-        { 0, 1, 2 }
+        { 2, 1, 0 }
     };
     auto transformation = make_shared<Research::Transformation>();
     transformation->setPosition(glm::vec3(0, 0, -1));
