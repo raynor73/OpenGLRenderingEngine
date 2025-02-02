@@ -33,14 +33,16 @@ namespace RenderingEngine {
 			std::shared_ptr<OpenGLShaderSourcePreprocessor> openGLShaderSourcePreprocessor
 		);
 
-		std::shared_ptr<RenderableMesh> createRenderableMesh(Mesh &mesh);
+		std::shared_ptr<RenderableMesh> createRenderableMesh(
+			Mesh &mesh,
+			std::shared_ptr<Transformation> transformation,
+			std::shared_ptr<Material> material
+		);
 
 		void freeRenderableMesh(uint32_t id);
 
 		void render(
 			Camera &camera,
-			Transformation &transformation,
-			Material &material,
 			const glm::vec3 &ambient
 		);
 

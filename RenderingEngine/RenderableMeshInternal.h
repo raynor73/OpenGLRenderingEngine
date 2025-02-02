@@ -14,7 +14,18 @@ class RenderableMeshInternal : public RenderableMesh {
 	bool m_isValid;
 
 public:
-	RenderableMeshInternal(GLuint vao, GLuint vbo, const IboInfo &iboInfo) : m_vao(vao), m_vbo(vbo), m_iboInfo(iboInfo), m_isValid(true) {}
+	RenderableMeshInternal(
+		std::shared_ptr<Transformation> transformation,
+		std::shared_ptr<Material> material,
+		GLuint vao, 
+		GLuint vbo, 
+		const IboInfo &iboInfo
+	) : RenderableMesh(transformation, material),
+		m_vao(vao),
+		m_vbo(vbo),
+		m_iboInfo(iboInfo),
+		m_isValid(true)
+	{}
 
 	GLuint vbo() const { return m_vbo; }
 	const IboInfo &iboInfo() const { return m_iboInfo; }

@@ -38,7 +38,11 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
     );
 }
 
-shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mesh) {
+shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
+    Mesh &mesh,
+    shared_ptr<Transformation> transformation,
+    shared_ptr<Material> material
+) {
     GLuint vao, vbo, ibo;
     glGenBuffers(1, &vbo);
     glGenVertexArrays(1, &vao);
@@ -96,7 +100,7 @@ shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mes
 
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::createRenderableMesh");
 
-    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(vao, vbo, iboInfo);
+    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(transformation, material, vao, vbo, iboInfo);
 	m_renderableMeshes.emplace(renderableMesh->id(), renderableMesh);
 
     return renderableMesh;
@@ -125,8 +129,6 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
 
 void OpenGLRenderingEngine::render(
     Camera &camera,
-    Transformation &transformation,
-    Material &material,
     const glm::vec3 &ambient
 ) {
     if (m_openGLErrorDetector->isOpenGLErrorDetected()) {
@@ -137,26 +139,31 @@ void OpenGLRenderingEngine::render(
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    auto mvMatrix = camera.projectionMatrix() * camera.viewMatrix();
+
     for (auto meshEntry : m_renderableMeshes) {
         auto mesh = meshEntry.second;
+        auto material = mesh->material();
+        auto transformation = mesh->transformation();
+
         auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
         glUseProgram(shader->shaderProgram());
 
         glBindVertexArray(mesh->vao());
 
-        auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation.position());
-        modelMatrix *= glm::toMat4(transformation.rotation());
-        modelMatrix = glm::scale(modelMatrix, transformation.scale());
+        auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
+        modelMatrix *= glm::toMat4(transformation->rotation());
+        modelMatrix = glm::scale(modelMatrix, transformation->scale());
 
-        glm::mat4x4 mvpMatrix = camera.projectionMatrix() * camera.viewMatrix() * modelMatrix;
+        auto mvpMatrix = mvMatrix * modelMatrix;
         glUniformMatrix4fv(shader->mvpMatrixUniform(), 1, false, &mvpMatrix[0][0]);
 
         glUniform4f(
             shader->diffuseColorUniform(),
-            material.diffuseColor().r,
-            material.diffuseColor().g,
-            material.diffuseColor().b,
-            material.diffuseColor().a
+            material->diffuseColor().r,
+            material->diffuseColor().g,
+            material->diffuseColor().b,
+            material->diffuseColor().a
         );
 
         glUniform3f(
