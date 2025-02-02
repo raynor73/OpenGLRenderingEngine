@@ -8,7 +8,7 @@ OpenGLShaderProgramContainer::OpenGLShaderProgramContainer(
     GLuint shaderProgram
 ) : m_openGLErrorDetector(move(openGLErrorDetector)),
     m_shaderProgram(shaderProgram),
-    m_positionAttribute(glGetAttribLocation(m_shaderProgram, "positionAttribute")),
+    //m_positionAttribute(glGetAttribLocation(m_shaderProgram, "positionAttribute")),
     //m_normalAttribute(glGetAttribLocation(shaderProgram, "normalAttribute")),
     //m_uvAttribute(glGetAttribLocation(shaderProgram, "uvAttribute")),
     m_mvpMatrixUniform(glGetUniformLocation(shaderProgram, "mvpMatrixUniform")),

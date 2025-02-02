@@ -24,6 +24,8 @@ namespace RenderingEngine {
 		static const std::string AMBIENT_FRAGMENT_SHADER_NAME;
 		static const std::string AMBIENT_SHADER_PROGRAM_NAME;
 
+		static const GLuint POSITION_ATTRIBUTE_LOCATION;
+
 	public:
 		OpenGLRenderingEngine(
 			std::shared_ptr<OpenGLErrorDetector> openGLErrorDetector,

@@ -13,6 +13,7 @@ const string OpenGLRenderingEngine::LOG_TAG = "OpenGLRenderingEngine";
 const string OpenGLRenderingEngine::AMBIENT_VERTEX_SHADER_NAME = "AmbientVertexShader";
 const string OpenGLRenderingEngine::AMBIENT_FRAGMENT_SHADER_NAME = "AmbientFragmentShader";
 const string OpenGLRenderingEngine::AMBIENT_SHADER_PROGRAM_NAME = "AmbientShader";
+const GLuint OpenGLRenderingEngine::POSITION_ATTRIBUTE_LOCATION = 0;
 
 OpenGLRenderingEngine::OpenGLRenderingEngine(
     shared_ptr<OpenGLErrorDetector> openGLErrorDetector,
@@ -38,10 +39,15 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
 }
 
 shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mesh) {
-    GLuint vbo;
+    GLuint vao, vbo, ibo;
     glGenBuffers(1, &vbo);
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &ibo);
+
+    glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
     vector<float> vertexData(mesh.numberOfVertices() * Vertex::VERTEX_COMPONENTS);
 
@@ -65,14 +71,15 @@ shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mes
         GL_STATIC_DRAW
     );
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    m_openGLErrorDetector->checkOpenGLErrors("createRenderableMesh#1");
-
-    GLuint ibo;
-    glGenBuffers(1, &ibo);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glVertexAttribPointer(
+        POSITION_ATTRIBUTE_LOCATION,
+        Vertex::VERTEX_POSITION_COMPONENTS,
+        GL_FLOAT,
+        false,
+        Vertex::VERTEX_COMPONENTS * sizeof(float),
+        reinterpret_cast<void *>(0)
+    );
+    glEnableVertexAttribArray(POSITION_ATTRIBUTE_LOCATION);
 
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
@@ -80,13 +87,16 @@ shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(Mesh &mes
         mesh.indices().data(),
         GL_STATIC_DRAW
     );
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     auto iboInfo = IboInfo{ ibo, mesh.indices().size()};
 
-    m_openGLErrorDetector->checkOpenGLErrors("createRenderableMesh#2");
+    m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::createRenderableMesh");
 
-    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(vbo, iboInfo);
+    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(vao, vbo, iboInfo);
 	m_renderableMeshes.emplace(renderableMesh->id(), renderableMesh);
 
     return renderableMesh;
@@ -101,8 +111,10 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
     }
 
     auto renderableMesh = m_renderableMeshes[id];
+    auto vao = renderableMesh->vao();
     auto vbo = renderableMesh->vbo();
     auto iboInfo = renderableMesh->iboInfo();
+    glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &iboInfo.ibo);
     renderableMesh->setValid(false);
@@ -128,22 +140,9 @@ void OpenGLRenderingEngine::render(
     for (auto meshEntry : m_renderableMeshes) {
         auto mesh = meshEntry.second;
         auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
 
-        glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo());
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->iboInfo().ibo);
-
-        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#1");
-
-        glVertexAttribPointer(
-            shader->positionAttribute(),
-            Vertex::VERTEX_POSITION_COMPONENTS,
-            GL_FLOAT,
-            false,
-            Vertex::VERTEX_COMPONENTS * sizeof(float),
-            reinterpret_cast<void *>(0)
-        );
-        glEnableVertexAttribArray(shader->positionAttribute());
-        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#2");
+        glBindVertexArray(mesh->vao());
 
         auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation.position());
         modelMatrix *= glm::toMat4(transformation.rotation());
@@ -166,7 +165,7 @@ void OpenGLRenderingEngine::render(
             ambient.g,
             ambient.b
         );
-        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#3");
+        //m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#3");
 
         glDrawElements(
             GL_TRIANGLES,
@@ -174,11 +173,9 @@ void OpenGLRenderingEngine::render(
             GL_UNSIGNED_SHORT,
             reinterpret_cast<void *>(0)
         );
-        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#4");
+        //m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render#4");
 
-        glEnableVertexAttribArray(shader->positionAttribute());
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
 
         m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
     }

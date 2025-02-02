@@ -11,7 +11,7 @@ class OpenGLShaderProgramContainer
 
     GLuint m_shaderProgram;
 
-    GLint m_positionAttribute;
+    //GLint m_positionAttribute;
     //GLint m_normalAttribute;
     //GLint m_uvAttribute;
 
@@ -31,7 +31,7 @@ public:
 
     GLuint shaderProgram() const { return m_shaderProgram; }
 
-    GLint positionAttribute() const { return m_positionAttribute; }
+    //GLint positionAttribute() const { return m_positionAttribute; }
     //GLint normalAttribute() const { return m_normalAttribute; }
     //GLint uvAttribute() const { return m_uvAttribute; }
 

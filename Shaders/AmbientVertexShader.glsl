@@ -1,6 +1,8 @@
-#version 150
+#version 330
 
-attribute vec3 positionAttribute;
+//attribute vec3 positionAttribute;
+layout(location = 0) in vec3 positionAttribute;
+
 //attribute vec2 uvAttribute;
 
 uniform mat4 mvpMatrixUniform;
