@@ -49,6 +49,8 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
     glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void OpenGLRenderingEngine::initShader(
@@ -172,6 +174,59 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
     m_openGLErrorDetector->checkOpenGLErrors("freeRenderableMesh");
 }
 
+void OpenGLRenderingEngine::renderMesh(
+    Camera &camera,
+    const glm::vec3 &ambient,
+    const glm::mat4 &vpMatrix,
+    shared_ptr<OpenGLShaderProgramContainer> shader,
+    shared_ptr<RenderableMeshInternal> mesh
+) {
+    auto material = mesh->material();
+    auto transformation = mesh->transformation();
+
+    glBindVertexArray(mesh->vao());
+
+    auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
+    modelMatrix *= glm::toMat4(transformation->rotation());
+    modelMatrix = glm::scale(modelMatrix, transformation->scale());
+
+    auto mvpMatrix = vpMatrix * modelMatrix;
+    glUniformMatrix4fv(shader->mvpMatrixUniform(), 1, false, &mvpMatrix[0][0]);
+    
+    auto modelMatrixUniform = shader->modelMatrixUniform();
+    if (modelMatrixUniform >= 0) {
+        glUniformMatrix4fv(modelMatrixUniform, 1, false, &modelMatrix[0][0]);
+    }
+
+    glUniform4f(
+        shader->diffuseColorUniform(),
+        material->diffuseColor().r,
+        material->diffuseColor().g,
+        material->diffuseColor().b,
+        material->diffuseColor().a
+    );
+
+    glUniform3f(
+        shader->ambientColorUniform(),
+        ambient.r,
+        ambient.g,
+        ambient.b
+    );
+
+    //auto directionalLight
+
+    glDrawElements(
+        GL_TRIANGLES,
+        mesh->iboInfo().numberOfIndices,
+        GL_UNSIGNED_SHORT,
+        reinterpret_cast<void *>(0)
+    );
+
+    glBindVertexArray(0);
+
+    m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::renderMesh");
+}
+
 void OpenGLRenderingEngine::render(
     Camera &camera,
     const glm::vec3 &ambient
@@ -184,48 +239,28 @@ void OpenGLRenderingEngine::render(
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    auto mvMatrix = camera.projectionMatrix() * camera.viewMatrix();
+    auto vpMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
     for (auto meshEntry : m_renderableMeshes) {
         auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
         glUseProgram(shader->shaderProgram());
 
-        auto mesh = meshEntry.second;
-        auto material = mesh->material();
-        auto transformation = mesh->transformation();
+        renderMesh(camera, ambient, vpMatrix, shader, meshEntry.second);
 
-        glBindVertexArray(mesh->vao());
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glDepthMask(GL_FALSE);
+        glDepthFunc(GL_EQUAL);
 
-        auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
-        modelMatrix *= glm::toMat4(transformation->rotation());
-        modelMatrix = glm::scale(modelMatrix, transformation->scale());
+        shader = m_shaderRepository->getShaderProgramContainer(DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
 
-        auto mvpMatrix = mvMatrix * modelMatrix;
-        glUniformMatrix4fv(shader->mvpMatrixUniform(), 1, false, &mvpMatrix[0][0]);
+        renderMesh(camera, ambient, vpMatrix, shader, meshEntry.second);
 
-        glUniform4f(
-            shader->diffuseColorUniform(),
-            material->diffuseColor().r,
-            material->diffuseColor().g,
-            material->diffuseColor().b,
-            material->diffuseColor().a
-        );
-
-        glUniform3f(
-            shader->ambientColorUniform(),
-            ambient.r,
-            ambient.g,
-            ambient.b
-        );
-
-        glDrawElements(
-            GL_TRIANGLES,
-            mesh->iboInfo().numberOfIndices,
-            GL_UNSIGNED_SHORT,
-            reinterpret_cast<void *>(0)
-        );
-
-        glBindVertexArray(0);
+        glDisable(GL_BLEND);
+        //glBlendFunc(GL_ONE, GL_ONE);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
 
         m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
     }
