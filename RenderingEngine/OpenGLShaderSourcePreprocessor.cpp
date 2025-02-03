@@ -16,12 +16,12 @@ string OpenGLShaderSourcePreprocessor::loadShaderSource(const string &path) {
             if (postfixPosition != string::npos) {
                 auto includePath = source.substr(
                     prefixPosition + INCLUDE_TOKEN_PREFIX.size(),
-                    postfixPosition - prefixPosition - INCLUDE_TOKEN_PREFIX.size() - INCLUDE_TOKEN_POSTFIX.size()
+                    postfixPosition - prefixPosition - INCLUDE_TOKEN_PREFIX.size() - INCLUDE_TOKEN_POSTFIX.size() + 1
                 );
                 auto includeSource = m_shaderSourceLoader->loadShaderSource(includePath);
                 source.replace(
-                    prefixPosition + INCLUDE_TOKEN_POSTFIX.size(),
-                    includePath.size() + INCLUDE_TOKEN_POSTFIX.size(),
+                    prefixPosition,
+                    INCLUDE_TOKEN_PREFIX.size() + includePath.size() + INCLUDE_TOKEN_POSTFIX.size(),
                     includeSource
                 );
                 currentPosition = prefixPosition + includeSource.size();

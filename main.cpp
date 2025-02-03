@@ -18,6 +18,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include "Research/BaseLight.h"
 
 #define MAX_LOADSTRING 100
 
@@ -122,6 +123,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         uint32_t(windowWidth), 
         uint32_t(windowHeight)
     };
+    Research::BaseLight ambient{ glm::vec3(1), 0.1 };
 
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -153,7 +155,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         transformation->setRotation(glm::quat(glm::vec3(xAngle, yAngle, zAngle)));
         openGLRenderingEngine.render(
             camera,
-            glm::vec3(1)
+            ambient,
+            std::vector<RenderingEngine::Light>()
         );
 
         ImGui::Render();

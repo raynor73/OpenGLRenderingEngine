@@ -18,7 +18,10 @@ class OpenGLShaderProgramContainer
     GLint m_diffuseColorUniform;
     //GLint m_useDiffuseColorUniform;
 
-    GLint m_ambientColorUniform;
+    //GLint m_ambientColorUniform;
+    GLint m_ambientLightColorUniform;
+    GLint m_ambientLightIntensityUniform;
+
     GLint m_directionalLightColorUniform;
     GLint m_directionalLightDirectionUniform;
 
@@ -39,7 +42,8 @@ public:
 
     //GLint useDiffuseColorUniform() const { return m_useDiffuseColorUniform; }
 
-    GLint ambientColorUniform() const { return m_ambientColorUniform; }
+    GLint ambientLightColorUniform() const { return m_ambientLightColorUniform; }
+    GLint ambientLightIntensityUniform() const { return m_ambientLightIntensityUniform; }
     GLint directionalLightColorUniform() const { return m_directionalLightColorUniform; }
     GLint directionalLightDirectionUniform() const { return m_directionalLightDirectionUniform; }
 };

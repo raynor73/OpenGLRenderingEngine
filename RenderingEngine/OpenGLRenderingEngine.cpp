@@ -176,7 +176,7 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
 
 void OpenGLRenderingEngine::renderMesh(
     Camera &camera,
-    const glm::vec3 &ambient,
+    BaseLight &ambient,
     const glm::mat4 &vpMatrix,
     shared_ptr<OpenGLShaderProgramContainer> shader,
     shared_ptr<RenderableMeshInternal> mesh
@@ -207,10 +207,14 @@ void OpenGLRenderingEngine::renderMesh(
     );
 
     glUniform3f(
-        shader->ambientColorUniform(),
-        ambient.r,
-        ambient.g,
-        ambient.b
+        shader->ambientLightColorUniform(),
+        ambient.color().r,
+        ambient.color().g,
+        ambient.color().b
+    );
+    glUniform1f(
+        shader->ambientLightIntensityUniform(),
+        ambient.intensity()
     );
 
     //auto directionalLight
@@ -229,7 +233,8 @@ void OpenGLRenderingEngine::renderMesh(
 
 void OpenGLRenderingEngine::render(
     Camera &camera,
-    const glm::vec3 &ambient
+    BaseLight &ambient,
+    const std::vector<Light>
 ) {
     if (m_openGLErrorDetector->isOpenGLErrorDetected()) {
         return;
@@ -247,7 +252,7 @@ void OpenGLRenderingEngine::render(
 
         renderMesh(camera, ambient, vpMatrix, shader, meshEntry.second);
 
-        glEnable(GL_BLEND);
+        /*glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_EQUAL);
@@ -258,9 +263,8 @@ void OpenGLRenderingEngine::render(
         renderMesh(camera, ambient, vpMatrix, shader, meshEntry.second);
 
         glDisable(GL_BLEND);
-        //glBlendFunc(GL_ONE, GL_ONE);
         glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);
+        glDepthFunc(GL_LESS);*/
 
         m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
     }
