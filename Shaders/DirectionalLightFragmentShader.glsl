@@ -1,9 +1,9 @@
-#version 330
+#version 330 core
 
-precision mediump float;
+#include "./Shaders/BaseLight.glsl"
 
 struct DirectionalLight {
-    vec3 color;
+    BaseLight base;
     vec3 direction;
 };
 
@@ -19,10 +19,12 @@ uniform vec4 diffuseColorUniform;
 varying vec3 normalVarying;
 varying vec3 positionVarying;
 
+out vec4 fragColor;
+
 void calcColor(out vec4 resultColor);
 
 void main() {
-    calcColor(gl_FragColor);
+    calcColor(fragColor);
     /*if (receiveShadows) {
         if (shadowMapUvVariying.x < 0.0 || shadowMapUvVariying.x > 1.0 || shadowMapUvVariying.y < 0.0 || shadowMapUvVariying.y > 1.0) {
             calcColor(gl_FragColor);
@@ -39,8 +41,8 @@ void main() {
 void calcColor(out vec4 resultColor) {
     //if (useDiffuseColorUniform) {
     resultColor =
-        diffuseColorUniform * vec4(directionalLightUniform.color, 1.0) *
-        dot(normalize(normalVarying), -directionalLightUniform.direction);
+        diffuseColorUniform * vec4(directionalLightUniform.base.color, 1.0) *
+        dot(normalize(normalVarying), -directionalLightUniform.direction) * directionalLightUniform.base.intensity;
     /*} else {
         resultColor =
         texture2D(textureUniform, uvVarying) * vec4(directionalLightUniform.color, 1.0) *

@@ -17,7 +17,7 @@
 #include "PointLight.h"
 
 namespace RenderingEngine {
-	using Light = std::variant<std::shared_ptr<DirectionalLight>, std::shared_ptr<PointLight>>;
+	using Light = std::variant<std::shared_ptr<BaseLight>, std::shared_ptr<DirectionalLight>, std::shared_ptr<PointLight>>;
 
 	class OpenGLRenderingEngine {
 		std::shared_ptr<OpenGLErrorDetector> m_openGLErrorDetector;
@@ -46,7 +46,7 @@ namespace RenderingEngine {
 
 		void renderMesh(
 			Camera &camera, 
-			BaseLight &ambient,
+			Light &light,
 			const glm::mat4 &vpMatrix, 
 			std::shared_ptr<OpenGLShaderProgramContainer> shader, 
 			std::shared_ptr<RenderableMeshInternal> mesh
@@ -69,8 +69,8 @@ namespace RenderingEngine {
 
 		void render(
 			Camera &camera,
-			BaseLight &ambient,
-			const std::vector<Light>
+			Light &ambient,
+			const std::vector<Light> &lights
 		);
 
 		static const std::string LOG_TAG;

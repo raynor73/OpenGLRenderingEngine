@@ -19,6 +19,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include "Research/BaseLight.h"
+#include "Research/DirectionalLight.h"
 
 #define MAX_LOADSTRING 100
 
@@ -123,7 +124,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         uint32_t(windowWidth), 
         uint32_t(windowHeight)
     };
-    Research::BaseLight ambient{ glm::vec3(1), 0.1 };
+    Light ambient = make_shared<Research::BaseLight>(glm::vec3(1), 0.1);
+    auto lights = vector<Light>();
+    auto directionalLight = make_shared<Research::DirectionalLight>(glm::vec3(0, 1, 0), 1, glm::vec3(0, -1, 0));
+    lights.push_back(directionalLight);
 
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -156,7 +160,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         openGLRenderingEngine.render(
             camera,
             ambient,
-            std::vector<RenderingEngine::Light>()
+            lights
         );
 
         ImGui::Render();

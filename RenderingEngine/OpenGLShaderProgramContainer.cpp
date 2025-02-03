@@ -17,7 +17,8 @@ OpenGLShaderProgramContainer::OpenGLShaderProgramContainer(
     m_ambientLightColorUniform(glGetUniformLocation(shaderProgram, "ambientColorUniform.color")),
     m_ambientLightIntensityUniform(glGetUniformLocation(shaderProgram, "ambientColorUniform.intensity")),
 
-    m_directionalLightColorUniform(glGetUniformLocation(shaderProgram, "directionalLightUniform.color")),
+    m_directionalLightColorUniform(glGetUniformLocation(shaderProgram, "directionalLightUniform.base.color")),
+    m_directionalLightIntensityUniform(glGetUniformLocation(shaderProgram, "directionalLightUniform.base.intensity")),
     m_directionalLightDirectionUniform(glGetUniformLocation(shaderProgram, "directionalLightUniform.direction"))
 {
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLShaderProgramContainer::OpenGLShaderProgramContainer");
