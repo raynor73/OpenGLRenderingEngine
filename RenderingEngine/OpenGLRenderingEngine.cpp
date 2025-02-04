@@ -180,9 +180,52 @@ void OpenGLRenderingEngine::renderMesh(
     Camera &camera,
     Light &light,
     const glm::mat4 &vpMatrix,
-    shared_ptr<OpenGLShaderProgramContainer> shader,
     shared_ptr<RenderableMeshInternal> mesh
 ) {
+    shared_ptr<OpenGLShaderProgramContainer> shader;
+
+    if (holds_alternative<shared_ptr<BaseLight>>(light)) {
+        shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
+
+        auto ambient = get<shared_ptr<BaseLight>>(light);
+        glUniform3f(
+            shader->ambientLightColorUniform(),
+            ambient->color().r,
+            ambient->color().g,
+            ambient->color().b
+        );
+        glUniform1f(
+            shader->ambientLightIntensityUniform(),
+            ambient->intensity()
+        );
+    } else if (holds_alternative<shared_ptr<DirectionalLight>>(light)) {
+        shader = m_shaderRepository->getShaderProgramContainer(DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
+
+        auto directionalLight = get<shared_ptr<DirectionalLight>>(light);
+        glUniform3f(
+            shader->directionalLightColorUniform(),
+            directionalLight->color().r,
+            directionalLight->color().g,
+            directionalLight->color().b
+        );
+        glUniform3f(
+            shader->directionalLightDirectionUniform(),
+            directionalLight->direction().x,
+            directionalLight->direction().y,
+            directionalLight->direction().z
+        );
+        glUniform1f(
+            shader->directionalLightIntensityUniform(),
+            directionalLight->intensity()
+        );
+    } else {
+        stringstream ss;
+        ss << "Unexpected light variant with index: " << light.index();
+        throw domain_error(ss.str());
+    }
+
     auto material = mesh->material();
     auto transformation = mesh->transformation();
 
@@ -207,40 +250,6 @@ void OpenGLRenderingEngine::renderMesh(
         material->diffuseColor().b,
         material->diffuseColor().a
     );
-
-    if (holds_alternative<shared_ptr<BaseLight>>(light)) {
-        auto ambient = get<shared_ptr<BaseLight>>(light);
-        glUniform3f(
-            shader->ambientLightColorUniform(),
-            ambient->color().r,
-            ambient->color().g,
-            ambient->color().b
-        );
-        glUniform1f(
-            shader->ambientLightIntensityUniform(),
-            ambient->intensity()
-        );
-    }
-
-    if (holds_alternative<shared_ptr<DirectionalLight>>(light)) {
-        auto directionalLight = get<shared_ptr<DirectionalLight>>(light);
-        glUniform3f(
-            shader->directionalLightColorUniform(),
-            directionalLight->color().r,
-            directionalLight->color().g,
-            directionalLight->color().b
-        );
-        glUniform3f(
-            shader->directionalLightDirectionUniform(),
-            directionalLight->direction().x,
-            directionalLight->direction().y,
-            directionalLight->direction().z
-        );
-        glUniform1f(
-            shader->directionalLightIntensityUniform(),
-            directionalLight->intensity()
-        );
-    }
 
     glDrawElements(
         GL_TRIANGLES,
@@ -270,20 +279,14 @@ void OpenGLRenderingEngine::render(
     auto vpMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
     for (auto meshEntry : m_renderableMeshes) {
-        auto shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
-        glUseProgram(shader->shaderProgram());
-
-        renderMesh(camera, ambient, vpMatrix, shader, meshEntry.second);
+        renderMesh(camera, ambient, vpMatrix, meshEntry.second);
 
         glEnable(GL_BLEND);
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_EQUAL);
 
-        shader = m_shaderRepository->getShaderProgramContainer(DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME);
-        glUseProgram(shader->shaderProgram());
-
         for (auto light : lights) {
-            renderMesh(camera, light, vpMatrix, shader, meshEntry.second);
+            renderMesh(camera, light, vpMatrix, meshEntry.second);
         }
 
         glDisable(GL_BLEND);

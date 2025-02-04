@@ -48,7 +48,6 @@ namespace RenderingEngine {
 			Camera &camera, 
 			Light &light,
 			const glm::mat4 &vpMatrix, 
-			std::shared_ptr<OpenGLShaderProgramContainer> shader, 
 			std::shared_ptr<RenderableMeshInternal> mesh
 		);
 
