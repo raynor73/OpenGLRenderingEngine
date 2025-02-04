@@ -276,6 +276,20 @@ void OpenGLRenderingEngine::render(
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glViewport(
+        camera.viewportLowerLeftCorner().x,
+        camera.viewportLowerLeftCorner().y,
+        camera.viewportSize().x,
+        camera.viewportSize().y
+    );
+
+    glScissor(
+        camera.scissortLowerLeftCorner().x,
+        camera.scissortLowerLeftCorner().y,
+        camera.scissorSize().x,
+        camera.scissorSize().y
+    );
+
     auto vpMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
     for (auto meshEntry : m_renderableMeshes) {

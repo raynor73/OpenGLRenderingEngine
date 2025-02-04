@@ -7,14 +7,16 @@ PerspectiveCamera::PerspectiveCamera(
 	float zNear,
 	float zFar,
 	float fov,
-	uint32_t viewportWidth,
-	uint32_t viewportHeight
+	const glm::uvec2 &viewportSize,
+	const glm::uvec2 &scissorSize
 ) : m_zNear(zNear),
 	m_zFar(zFar),
 	m_fov(fov),
 	m_clearColor(0),
-	m_viewportWidth(viewportWidth),
-	m_viewportHeight(viewportHeight),
+	m_viewportLowerLeftCorner(0),
+	m_viewportSize(viewportSize),
+	m_scissorLowerLeftCorner(0),
+	m_scissorSize(scissorSize),
 	m_position(0),
 	m_rotation(glm::identity<glm::quat>())
 {
@@ -25,7 +27,7 @@ PerspectiveCamera::PerspectiveCamera(
 void PerspectiveCamera::calculateProjectionMatrix() {
 	m_projectionMatrix = glm::perspective(
 		m_fov,
-		float(m_viewportWidth) / m_viewportHeight,
+		float(m_viewportSize.x) / m_viewportSize.y,
 		m_zNear,
 		m_zFar
 	);
@@ -54,10 +56,9 @@ void PerspectiveCamera::setRotation(const glm::quat &rotation) {
 	calculateViewMatrix();
 }
 
-void PerspectiveCamera::setViewportSize(uint32_t width, uint32_t height) {
-	if (m_viewportWidth != width || m_viewportHeight != height) {
-		m_viewportWidth = width;
-		m_viewportHeight = height;
+void PerspectiveCamera::setViewportSize(const glm::uvec2 &size) {
+	if (m_viewportSize != size) {
+		m_viewportSize = size;
 		calculateProjectionMatrix();
 	}
 }

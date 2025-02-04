@@ -121,8 +121,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         0.1f,
         1000,
         90,
-        uint32_t(windowWidth), 
-        uint32_t(windowHeight)
+        glm::uvec2(windowWidth, windowHeight),
+        glm::uvec2(windowWidth, windowHeight)
     };
     Light ambient = make_shared<Research::BaseLight>(glm::vec3(1), 0.1);
     auto lights = vector<Light>();
@@ -155,7 +155,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        camera.setViewportSize(windowWidth, windowHeight);
+        camera.setViewportSize(glm::uvec2(windowWidth, windowHeight));
         transformation->setRotation(glm::quat(glm::vec3(xAngle, yAngle, zAngle)));
         openGLRenderingEngine.render(
             camera,

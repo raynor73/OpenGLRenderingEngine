@@ -12,8 +12,11 @@ namespace Research
 		float m_fov;
 		glm::vec4 m_clearColor;
 
-		uint32_t m_viewportWidth;
-		uint32_t m_viewportHeight;
+		glm::ivec2 m_viewportLowerLeftCorner;
+		glm::uvec2 m_viewportSize;
+
+		glm::ivec2 m_scissorLowerLeftCorner;
+		glm::uvec2 m_scissorSize;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;
@@ -29,18 +32,27 @@ namespace Research
 			float zNear,
 			float zFar,
 			float fov,
-			uint32_t viewportWidth,
-			uint32_t viewportHeight
+			const glm::uvec2 &viewportSize,
+			const glm::uvec2 &scissorSize
 		);
 
 		void setPosition(const glm::vec3 &position);
 		void setRotation(const glm::quat &rotation);
-		void setViewportSize(uint32_t width, uint32_t height);
+
+		void setViewportSize(const glm::uvec2 &size);
+
+		void setScissorSize(const glm::uvec2 &size) { m_scissorSize = size; }
 
 		float zNear() override { return m_zNear; }
 		float zFar() override { return m_zFar; }
 		const glm::vec4 &clearColor() override { return m_clearColor; }
 		const glm::mat4 &viewMatrix() override { return m_viewMatrix; }
 		const glm::mat4 &projectionMatrix() override { return m_projectionMatrix; }
+
+		const glm::ivec2 &viewportLowerLeftCorner() { return m_viewportLowerLeftCorner; }
+		const glm::uvec2 &viewportSize() { return m_viewportSize; }
+
+		const glm::ivec2 &scissortLowerLeftCorner() { return m_scissorLowerLeftCorner; }
+		const glm::uvec2 &scissorSize() { return m_scissorSize; }
 	};
 }

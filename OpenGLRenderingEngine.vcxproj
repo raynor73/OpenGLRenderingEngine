@@ -133,6 +133,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="RenderingEngine\Attenuation.h" />
+    <ClInclude Include="RenderingEngine\BaseLight.h" />
+    <ClInclude Include="RenderingEngine\DirectionalLight.h" />
+    <ClInclude Include="RenderingEngine\PointLight.h" />
     <ClInclude Include="Research\BaseLight.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Logger.h" />
