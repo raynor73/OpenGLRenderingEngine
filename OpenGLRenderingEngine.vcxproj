@@ -210,10 +210,6 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\AmbientFragmentShader.glsl" />
-    <None Include="Shaders\AmbientVertexShader.glsl" />
-    <None Include="Shaders\DirectionalLightFragmentShader.glsl" />
-    <None Include="Shaders\DirectionalLightVertexShader.glsl" />
     <None Include="ThirdParty\imgui\misc\debuggers\imgui.natstepfilter" />
   </ItemGroup>
   <ItemGroup>

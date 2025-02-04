@@ -2,6 +2,8 @@
 
 #include <RenderingEngine/Camera.h>
 #include <glm/ext/quaternion_float.hpp>
+#include <vector>
+#include <string>
 
 namespace Research
 {
@@ -24,6 +26,8 @@ namespace Research
 		glm::mat4 m_viewMatrix;
 		glm::mat4 m_projectionMatrix;
 
+		std::vector<std::string> m_layers;
+
 		void calculateProjectionMatrix();
 		void calculateViewMatrix();
 
@@ -33,7 +37,8 @@ namespace Research
 			float zFar,
 			float fov,
 			const glm::uvec2 &viewportSize,
-			const glm::uvec2 &scissorSize
+			const glm::uvec2 &scissorSize,
+			const std::vector<std::string> &layers
 		);
 
 		void setPosition(const glm::vec3 &position);
@@ -54,5 +59,7 @@ namespace Research
 
 		const glm::ivec2 &scissortLowerLeftCorner() { return m_scissorLowerLeftCorner; }
 		const glm::uvec2 &scissorSize() { return m_scissorSize; }
+
+		const std::vector<std::string> &layers() override { return m_layers; }
 	};
 }

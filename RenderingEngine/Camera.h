@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
+#include <string>
 
 namespace RenderingEngine {
 	class Camera {
@@ -16,6 +18,8 @@ namespace RenderingEngine {
 
 		virtual const glm::ivec2 &scissortLowerLeftCorner() = 0;
 		virtual const glm::uvec2 &scissorSize() = 0;
+
+		virtual const std::vector<std::string> &layers() = 0;
 
 		/*bool shouldClearDepth() const { return m_shouldClearDepth; }
 		void setShouldClearDepth(bool shouldClearDepth) { m_shouldClearDepth = shouldClearDepth; }

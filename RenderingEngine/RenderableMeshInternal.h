@@ -17,10 +17,11 @@ public:
 	RenderableMeshInternal(
 		std::shared_ptr<Transformation> transformation,
 		std::shared_ptr<Material> material,
+		const std::vector<std::string> &layers,
 		GLuint vao, 
 		GLuint vbo, 
 		const IboInfo &iboInfo
-	) : RenderableMesh(transformation, material),
+	) : RenderableMesh(transformation, material, layers),
 		m_vao(vao),
 		m_vbo(vbo),
 		m_iboInfo(iboInfo),

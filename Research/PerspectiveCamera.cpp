@@ -8,7 +8,8 @@ PerspectiveCamera::PerspectiveCamera(
 	float zFar,
 	float fov,
 	const glm::uvec2 &viewportSize,
-	const glm::uvec2 &scissorSize
+	const glm::uvec2 &scissorSize,
+	const std::vector<std::string> &layers
 ) : m_zNear(zNear),
 	m_zFar(zFar),
 	m_fov(fov),
@@ -18,7 +19,8 @@ PerspectiveCamera::PerspectiveCamera(
 	m_scissorLowerLeftCorner(0),
 	m_scissorSize(scissorSize),
 	m_position(0),
-	m_rotation(glm::identity<glm::quat>())
+	m_rotation(glm::identity<glm::quat>()),
+	m_layers(layers)
 {
 	calculateViewMatrix();
 	calculateProjectionMatrix();

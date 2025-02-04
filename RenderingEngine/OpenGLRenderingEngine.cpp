@@ -80,7 +80,8 @@ void OpenGLRenderingEngine::initShader(
 shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
     Mesh &mesh,
     shared_ptr<Transformation> transformation,
-    shared_ptr<Material> material
+    shared_ptr<Material> material,
+    const std::vector<std::string> &layers
 ) {
     GLuint vao, vbo, ibo;
     glGenBuffers(1, &vbo);
@@ -149,8 +150,12 @@ shared_ptr<RenderableMesh> OpenGLRenderingEngine::createRenderableMesh(
 
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::createRenderableMesh");
 
-    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(transformation, material, vao, vbo, iboInfo);
+    shared_ptr<RenderableMeshInternal> renderableMesh = make_shared<RenderableMeshInternal>(transformation, material, layers, vao, vbo, iboInfo);
 	m_renderableMeshes.emplace(renderableMesh->id(), renderableMesh);
+    for (auto layer : layers) {
+        m_renderableMeshLayers.emplace(renderableMesh->id(), layer);
+        m_layerRenderableMeshes.emplace(layer, renderableMesh->id());
+    }
 
     return renderableMesh;
 }
@@ -171,7 +176,15 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &iboInfo.ibo);
     renderableMesh->setValid(false);
+
     m_renderableMeshes.erase(id);
+
+    auto range = m_renderableMeshLayers.equal_range(id);
+    for (auto it = range.first; it != range.second; it++) {
+        m_layerRenderableMeshes.erase(it->second);
+    }
+
+    m_renderableMeshLayers.erase(id);
 
     m_openGLErrorDetector->checkOpenGLErrors("freeRenderableMesh");
 }
@@ -292,7 +305,29 @@ void OpenGLRenderingEngine::render(
 
     auto vpMatrix = camera.projectionMatrix() * camera.viewMatrix();
 
-    for (auto meshEntry : m_renderableMeshes) {
+    for (auto cameraLayer : camera.layers()) {
+        auto meshesRange = m_layerRenderableMeshes.equal_range(cameraLayer);
+        for (auto it = meshesRange.first; it != meshesRange.second; it++) {
+            auto mesh = m_renderableMeshes.find(it->second)->second;
+
+            renderMesh(camera, ambient, vpMatrix, mesh);
+
+            glEnable(GL_BLEND);
+            glDepthMask(GL_FALSE);
+            glDepthFunc(GL_EQUAL);
+
+            for (auto light : lights) {
+                renderMesh(camera, light, vpMatrix, mesh);
+            }
+
+            glDisable(GL_BLEND);
+            glDepthMask(GL_TRUE);
+            glDepthFunc(GL_LESS);
+        }
+    }
+    
+    /*for (auto meshEntry : m_renderableMeshes) {
+
         renderMesh(camera, ambient, vpMatrix, meshEntry.second);
 
         glEnable(GL_BLEND);
@@ -306,7 +341,7 @@ void OpenGLRenderingEngine::render(
         glDisable(GL_BLEND);
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
-    }
+    }*/
 
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
 }

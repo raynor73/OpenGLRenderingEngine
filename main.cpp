@@ -31,6 +31,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 #define CONSOLE_BUFFER_SIZE 1024
 #define INITIAL_WINDOW_WIDTH 1440
 #define INITIAL_WINDOW_HEIGHT 900
+#define DEFAULT_LAYER_NAME "default"
 
 using namespace PlatformDependent::Windows;
 using namespace PlatformDependent::Windows::Utils;
@@ -114,7 +115,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     auto transformation = make_shared<Research::Transformation>();
     transformation->setPosition(glm::vec3(0, 0, -1));
     auto material = make_shared<Research::Material>(glm::vec4(1));
-    openGLRenderingEngine.createRenderableMesh(mesh, transformation, material);
+    openGLRenderingEngine.createRenderableMesh(mesh, transformation, material, { DEFAULT_LAYER_NAME });
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     Research::PerspectiveCamera camera { 
@@ -122,7 +123,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         1000,
         90,
         glm::uvec2(windowWidth, windowHeight),
-        glm::uvec2(windowWidth, windowHeight)
+        glm::uvec2(windowWidth, windowHeight),
+        { DEFAULT_LAYER_NAME }
     };
     Light ambient = make_shared<Research::BaseLight>(glm::vec3(1), 0.1);
     auto lights = vector<Light>();

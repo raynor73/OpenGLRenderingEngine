@@ -8,7 +8,7 @@
 #include "OpenGLErrorDetector.h"
 #include <vector>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "OpenGLShadersRepository.h"
 #include "OpenGLShaderSourcePreprocessor.h"
@@ -23,7 +23,9 @@ namespace RenderingEngine {
 		std::shared_ptr<OpenGLErrorDetector> m_openGLErrorDetector;
 		std::shared_ptr<OpenGLShadersRepository> m_shaderRepository;
 		std::shared_ptr<OpenGLShaderSourcePreprocessor> m_shaderSourcePreprocessor;
-		std::map<uint32_t, std::shared_ptr<RenderableMeshInternal>> m_renderableMeshes;
+		std::unordered_map<uint32_t, std::shared_ptr<RenderableMeshInternal>> m_renderableMeshes;
+		std::unordered_multimap<uint32_t, std::string> m_renderableMeshLayers;
+		std::unordered_multimap<std::string, uint32_t> m_layerRenderableMeshes;
 
 		static const std::string AMBIENT_VERTEX_SHADER_NAME;
 		static const std::string AMBIENT_FRAGMENT_SHADER_NAME;
@@ -61,7 +63,8 @@ namespace RenderingEngine {
 		std::shared_ptr<RenderableMesh> createRenderableMesh(
 			Mesh &mesh,
 			std::shared_ptr<Transformation> transformation,
-			std::shared_ptr<Material> material
+			std::shared_ptr<Material> material,
+			const std::vector<std::string> &layers
 		);
 
 		void freeRenderableMesh(uint32_t id);
