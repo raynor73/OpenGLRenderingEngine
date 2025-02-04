@@ -20,7 +20,9 @@ PerspectiveCamera::PerspectiveCamera(
 	m_scissorSize(scissorSize),
 	m_position(0),
 	m_rotation(glm::identity<glm::quat>()),
-	m_layers(layers)
+	m_layers(layers),
+	m_shouldClearDepth(true),
+	m_shouldClearColor(true)
 {
 	calculateViewMatrix();
 	calculateProjectionMatrix();

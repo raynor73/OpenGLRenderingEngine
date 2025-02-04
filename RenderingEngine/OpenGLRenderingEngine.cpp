@@ -287,7 +287,15 @@ void OpenGLRenderingEngine::render(
 
     auto clearColor = camera.clearColor();
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    GLbitfield clearMask = 0;
+    if (camera.shouldClearColor()) {
+        clearMask |= GL_COLOR_BUFFER_BIT;
+    }
+    if (camera.shouldClearDepth()) {
+        clearMask |= GL_DEPTH_BUFFER_BIT;
+    }
+    glClear(clearMask);
 
     glViewport(
         camera.viewportLowerLeftCorner().x,

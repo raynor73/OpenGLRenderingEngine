@@ -21,9 +21,10 @@ namespace RenderingEngine {
 
 		virtual const std::vector<std::string> &layers() = 0;
 
-		/*bool shouldClearDepth() const { return m_shouldClearDepth; }
-		void setShouldClearDepth(bool shouldClearDepth) { m_shouldClearDepth = shouldClearDepth; }
-		bool shouldClearColor() const { return m_shouldClearColor; }
-		void setShouldClearColor(bool shouldClearColor) { m_shouldClearColor = shouldClearColor; }*/
+		virtual bool shouldClearDepth() = 0;
+		virtual void setShouldClearDepth(bool shouldClearDepth) = 0;
+
+		virtual bool shouldClearColor() = 0;
+		virtual void setShouldClearColor(bool shouldClearColor) = 0;
 	};
 }

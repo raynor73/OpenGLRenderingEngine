@@ -28,6 +28,9 @@ namespace Research
 
 		std::vector<std::string> m_layers;
 
+		bool m_shouldClearDepth;
+		bool m_shouldClearColor;
+
 		void calculateProjectionMatrix();
 		void calculateViewMatrix();
 
@@ -61,5 +64,11 @@ namespace Research
 		const glm::uvec2 &scissorSize() { return m_scissorSize; }
 
 		const std::vector<std::string> &layers() override { return m_layers; }
+
+		bool shouldClearDepth() override { return m_shouldClearDepth; }
+		void setShouldClearDepth(bool shouldClearDepth) override { m_shouldClearDepth = shouldClearDepth; }
+
+		bool shouldClearColor() override { return m_shouldClearColor; }
+		void setShouldClearColor(bool shouldClearColor) override { m_shouldClearColor = shouldClearColor; }
 	};
 }
