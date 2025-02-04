@@ -126,7 +126,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     };
     Light ambient = make_shared<Research::BaseLight>(glm::vec3(1), 0.1);
     auto lights = vector<Light>();
-    auto directionalLight = make_shared<Research::DirectionalLight>(glm::vec3(0, 1, 0), 1, glm::vec3(0, -1, 0));
+    auto directionalLight = make_shared<Research::DirectionalLight>(glm::vec3(0, 1, 0), 1, glm::vec3(-1, 0, 0));
     lights.push_back(directionalLight);
 
     ImGui::CreateContext();

@@ -237,7 +237,7 @@ void OpenGLRenderingEngine::renderMesh(
             directionalLight->direction().z
         );
         glUniform1f(
-            shader->directionalLightDirectionUniform(),
+            shader->directionalLightIntensityUniform(),
             directionalLight->intensity()
         );
     }
@@ -289,7 +289,7 @@ void OpenGLRenderingEngine::render(
         glDisable(GL_BLEND);
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
-
-        m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
     }
+
+    m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
 }
