@@ -150,6 +150,7 @@
     <ClInclude Include="RenderingEngine\ReadOnlyFs.h" />
     <ClInclude Include="Research\Constants.h" />
     <ClInclude Include="Research\Demo1.h" />
+    <ClInclude Include="Research\Demo2.h" />
     <ClInclude Include="Research\DirectionalLight.h" />
     <ClInclude Include="Research\Material.h" />
     <ClInclude Include="Research\Mesh.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="RenderingEngine\OpenGLShadersRepository.cpp" />
     <ClCompile Include="RenderingEngine\RenderableMesh.cpp" />
     <ClCompile Include="Research\Demo1.cpp" />
+    <ClCompile Include="Research\Demo2.cpp" />
     <ClCompile Include="Research\MeshLoader.cpp" />
     <ClCompile Include="Research\PerspectiveCamera.cpp" />
     <ClCompile Include="Research\Transformation.h" />
