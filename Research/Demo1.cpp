@@ -25,7 +25,8 @@ Demo1::Demo1(GLFWwindow *window) :
 	m_xAngle(0),
 	m_zAngle(0),
     m_isWireframe(false),
-    m_isUnlit(false)
+    m_isUnlit(false),
+    m_isDoubleSided(false)
 {
     m_verticalPlaneMesh = make_shared<Mesh>();
     *m_verticalPlaneMesh = m_meshLoader->loadMesh("./Meshes/VerticalPlane.obj");
@@ -33,7 +34,7 @@ Demo1::Demo1(GLFWwindow *window) :
     m_transformation = make_shared<Research::Transformation>();
     m_transformation->setPosition(glm::vec3(0, 0, -1));
 
-    m_material = make_shared<Research::Material>(glm::vec4(1), false);
+    m_material = make_shared<Research::Material>(glm::vec4(1), false, false, false);
 
     m_openGLRenderingEngine->createRenderableMesh(*m_verticalPlaneMesh, m_transformation, m_material, { DEFAULT_LAYER_NAME });
 
@@ -65,6 +66,7 @@ void Demo1::update() {
     ImGui::SliderAngle("Z angle", &m_zAngle);
     ImGui::Checkbox("Wireframe", &m_isWireframe);
     ImGui::Checkbox("Unlit", &m_isUnlit);
+    ImGui::Checkbox("Double-sided", &m_isDoubleSided);
     ImGui::End();
 
     int windowWidth, windowHeight;
@@ -75,6 +77,7 @@ void Demo1::update() {
     m_transformation->setRotation(glm::quat(glm::vec3(m_xAngle, m_yAngle, m_zAngle)));
     m_material->setWireframe(m_isWireframe);
     m_material->setUnlit(m_isUnlit);
+    m_material->setDoubleSided(m_isDoubleSided);
 
     m_openGLRenderingEngine->render(*m_camera, m_ambient, m_lights);
 }

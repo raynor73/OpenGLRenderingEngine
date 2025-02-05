@@ -12,6 +12,6 @@ public:
     //virtual bool isTranslucent() const = 0;
     virtual bool isWireframe() = 0;
     virtual bool isUnlit() = 0;
-    //virtual bool isDoubleSided() const = 0;
+    virtual bool isDoubleSided() = 0;
 };
 }

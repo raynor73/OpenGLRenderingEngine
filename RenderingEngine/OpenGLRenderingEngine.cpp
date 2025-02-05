@@ -58,7 +58,7 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
 
     glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     glBlendFunc(GL_ONE, GL_ONE);
 
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -282,6 +282,12 @@ void OpenGLRenderingEngine::renderMesh(
         mode = GL_LINE_STRIP;
     } else {
         mode = GL_TRIANGLES;
+    }
+
+    if (material->isDoubleSided()) {
+        glDisable(GL_CULL_FACE);
+    } else {
+        glEnable(GL_CULL_FACE);
     }
 
     glDrawElements(
