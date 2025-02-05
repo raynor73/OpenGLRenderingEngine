@@ -2,25 +2,15 @@
 //
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <vector>
 #include "framework.h"
 #include "main.h"
 #include <PlatformDependent/Windows/Utils.h>
 #include "Resource.h"
-#include <RenderingEngine/OpenGLRenderingEngine.h>
 #include <PlatformDependent/Windows/WindowsLogger.h>
-#include <Research/Mesh.h>
-#include <Research/Transformation.h>
-#include <Research/Material.h>
-#include <Research/PerspectiveCamera.h>
-#include <filesystem>
-#include <PlatformDependent/Windows/WindowsReadOnlyFs.h>
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-#include "Research/BaseLight.h"
-#include "Research/DirectionalLight.h"
-#include "Research/MeshLoader.h"
+#include "Research/Demo1.h"
 
 #define MAX_LOADSTRING 100
 
@@ -32,7 +22,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 #define CONSOLE_BUFFER_SIZE 1024
 #define INITIAL_WINDOW_WIDTH 1440
 #define INITIAL_WINDOW_HEIGHT 900
-#define DEFAULT_LAYER_NAME "default"
 
 using namespace PlatformDependent::Windows;
 using namespace PlatformDependent::Windows::Utils;
@@ -94,79 +83,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return -1;
     }
 
-    auto openGLErrorDetector = make_shared<OpenGLErrorDetector>();
-    auto readOnlyFs = make_shared<WindowsReadOnlyFs>();
-    auto shaderSourceLoader = make_shared<OpenGLShaderSourceLoader>(readOnlyFs);
-    auto shaderSourcePreprocessor = make_shared<OpenGLShaderSourcePreprocessor>(shaderSourceLoader);
-    auto shaderRepository = make_shared<OpenGLShadersRepository>(openGLErrorDetector);
-    auto meshLoader = make_shared<Research::MeshLoader>(readOnlyFs);
-
-    OpenGLRenderingEngine openGLRenderingEngine(
-        openGLErrorDetector,
-        shaderRepository,
-        shaderSourcePreprocessor
-    );
-    /*Research::Mesh mesh {
-        {
-            Research::Vertex { { 0, 0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
-            Research::Vertex { { 0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
-            Research::Vertex { { -0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } }
-        },
-        { 2, 1, 0 }
-    };*/
-    Research::Mesh verticalPlaneMesh = meshLoader->loadMesh("./Meshes/VerticalPlane.obj");
-    auto transformation = make_shared<Research::Transformation>();
-    transformation->setPosition(glm::vec3(0, 0, -1));
-    auto material = make_shared<Research::Material>(glm::vec4(1));
-    openGLRenderingEngine.createRenderableMesh(verticalPlaneMesh, transformation, material, { DEFAULT_LAYER_NAME });
-    int windowWidth, windowHeight;
-    glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    Research::PerspectiveCamera camera { 
-        0.1f,
-        1000,
-        90,
-        glm::uvec2(windowWidth, windowHeight),
-        glm::uvec2(windowWidth, windowHeight),
-        { DEFAULT_LAYER_NAME }
-    };
-    Light ambient = make_shared<Research::BaseLight>(glm::vec3(1), 0.1);
-    auto lights = vector<Light>();
-    auto directionalLight = make_shared<Research::DirectionalLight>(glm::vec3(0, 1, 0), 1, glm::vec3(-1, 0, 0));
-    lights.push_back(directionalLight);
+    Research::Demo1 demo1{ window };
 
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-    float yAngle = 0.0f;
-    float xAngle = 0.0f;
-    float zAngle = 0.0f;
-    while (!glfwWindowShouldClose(window))
-    {
+    int windowWidth, windowHeight;
+
+    while (!glfwWindowShouldClose(window)) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        //ImGui::ShowDemoWindow();
-        ImGui::Begin("Hello, world!");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::SliderAngle("Y angle", &yAngle);
-        ImGui::SliderAngle("X angle", &xAngle);
-        ImGui::SliderAngle("Z angle", &zAngle);
-        ImGui::End();
 
         /* Render here */
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        camera.setViewportSize(glm::uvec2(windowWidth, windowHeight));
-        transformation->setRotation(glm::quat(glm::vec3(xAngle, yAngle, zAngle)));
-        openGLRenderingEngine.render(
-            camera,
-            ambient,
-            lights
-        );
+        demo1.update();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

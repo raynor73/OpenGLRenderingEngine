@@ -11,6 +11,8 @@ class Mesh : public RenderingEngine::Mesh
 	std::vector<uint16_t> m_indices;
 
 public:
+	Mesh() = default;
+
 	Mesh(
 		const std::vector<Vertex> &vertices, 
 		const std::vector<uint16_t> &indices
