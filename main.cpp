@@ -20,6 +20,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include "Research/BaseLight.h"
 #include "Research/DirectionalLight.h"
+#include "Research/MeshLoader.h"
 
 #define MAX_LOADSTRING 100
 
@@ -98,24 +99,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     auto shaderSourceLoader = make_shared<OpenGLShaderSourceLoader>(readOnlyFs);
     auto shaderSourcePreprocessor = make_shared<OpenGLShaderSourcePreprocessor>(shaderSourceLoader);
     auto shaderRepository = make_shared<OpenGLShadersRepository>(openGLErrorDetector);
+    auto meshLoader = make_shared<Research::MeshLoader>(readOnlyFs);
 
     OpenGLRenderingEngine openGLRenderingEngine(
         openGLErrorDetector,
         shaderRepository,
         shaderSourcePreprocessor
     );
-    Research::Mesh mesh {
+    /*Research::Mesh mesh {
         {
             Research::Vertex { { 0, 0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
             Research::Vertex { { 0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } },
             Research::Vertex { { -0.5, -0.5, 0 }, { 0, 0, 1 }, { 0, 0 } }
         },
         { 2, 1, 0 }
-    };
+    };*/
+    Research::Mesh verticalPlaneMesh = meshLoader->loadMesh("./Meshes/VerticalPlane.obj");
     auto transformation = make_shared<Research::Transformation>();
     transformation->setPosition(glm::vec3(0, 0, -1));
     auto material = make_shared<Research::Material>(glm::vec4(1));
-    openGLRenderingEngine.createRenderableMesh(mesh, transformation, material, { DEFAULT_LAYER_NAME });
+    openGLRenderingEngine.createRenderableMesh(verticalPlaneMesh, transformation, material, { DEFAULT_LAYER_NAME });
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     Research::PerspectiveCamera camera { 
