@@ -19,6 +19,8 @@ const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_VERTEX_SHADER_NAME = "Dire
 const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_FRAGMENT_SHADER_NAME = "DirectionalLightFragmentShader";
 const string OpenGLRenderingEngine::DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME = "DirectionalLightShader";
 
+const string OpenGLRenderingEngine::UNLIT_SHADER_PROGRAM_NAME = "UnlitShader";
+
 const GLuint OpenGLRenderingEngine::POSITION_ATTRIBUTE_LOCATION = 0;
 const GLuint OpenGLRenderingEngine::NORMAL_ATTRIBUTE_LOCATION = 1;
 
@@ -46,12 +48,19 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
         DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME
     );
 
+    initShader(
+        "UnlitVertexShader",
+        "./Shaders/AmbientVertexShader.glsl",
+        "UnlitFragmentShader",
+        "./Shaders/UnlitFragmentShader.glsl",
+        UNLIT_SHADER_PROGRAM_NAME
+    );
+
     glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -197,7 +206,12 @@ void OpenGLRenderingEngine::renderMesh(
 ) {
     shared_ptr<OpenGLShaderProgramContainer> shader;
 
-    if (holds_alternative<shared_ptr<BaseLight>>(light)) {
+    auto material = mesh->material();
+
+    if (material->isUnlit()) {
+        shader = m_shaderRepository->getShaderProgramContainer(UNLIT_SHADER_PROGRAM_NAME);
+        glUseProgram(shader->shaderProgram());
+    } else if (holds_alternative<shared_ptr<BaseLight>>(light)) {
         shader = m_shaderRepository->getShaderProgramContainer(AMBIENT_SHADER_PROGRAM_NAME);
         glUseProgram(shader->shaderProgram());
 
@@ -239,7 +253,6 @@ void OpenGLRenderingEngine::renderMesh(
         throw domain_error(ss.str());
     }
 
-    auto material = mesh->material();
     auto transformation = mesh->transformation();
 
     glBindVertexArray(mesh->vao());
@@ -326,6 +339,10 @@ void OpenGLRenderingEngine::render(
             auto mesh = m_renderableMeshes.find(it->second)->second;
 
             renderMesh(camera, ambient, vpMatrix, mesh);
+
+            if (mesh->material()->isUnlit()) {
+                continue;
+            }
 
             glEnable(GL_BLEND);
             glDepthMask(GL_FALSE);

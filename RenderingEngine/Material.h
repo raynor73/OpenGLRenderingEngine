@@ -11,7 +11,7 @@ public:
     //virtual bool useDiffuseColor() const = 0;
     //virtual bool isTranslucent() const = 0;
     virtual bool isWireframe() = 0;
-    //virtual bool isUnlit() const = 0;
+    virtual bool isUnlit() = 0;
     //virtual bool isDoubleSided() const = 0;
 };
 }

@@ -8,6 +8,7 @@ class Material : public RenderingEngine::Material {
 
     glm::vec4 m_diffuseColor;
     bool m_isWireframe;
+    bool m_isUnlit;
 
 public:
     Material() : m_diffuseColor(0), m_isWireframe(false) {}
@@ -18,5 +19,8 @@ public:
 
     bool isWireframe() { return m_isWireframe; }
     void setWireframe(bool isWireframe) { m_isWireframe = isWireframe; }
+
+    bool isUnlit() { return m_isUnlit; }
+    void setUnlit(bool isUnlit) { m_isUnlit = isUnlit; }
 };
 }

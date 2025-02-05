@@ -35,6 +35,8 @@ namespace RenderingEngine {
 		static const std::string DIRECTIONAL_LIGHT_FRAGMENT_SHADER_NAME;
 		static const std::string DIRECTIONAL_LIGHT_SHADER_PROGRAM_NAME;
 
+		static const std::string UNLIT_SHADER_PROGRAM_NAME;
+
 		static const GLuint POSITION_ATTRIBUTE_LOCATION;
 		static const GLuint NORMAL_ATTRIBUTE_LOCATION;
 
