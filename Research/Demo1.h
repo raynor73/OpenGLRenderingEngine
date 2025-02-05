@@ -39,6 +39,7 @@ class Demo1 {
     float m_yAngle;
     float m_xAngle;
     float m_zAngle;
+    bool m_isWireframe;
 
 public:
     Demo1(GLFWwindow *window);

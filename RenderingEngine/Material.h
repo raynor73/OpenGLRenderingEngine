@@ -7,11 +7,11 @@ namespace RenderingEngine
 class Material {
 public:
     virtual const glm::vec4& diffuseColor() = 0;
-    /*virtual const std::string& textureName() const = 0;
-    virtual bool useDiffuseColor() const = 0;
-    virtual bool isTranslucent() const = 0;
-    virtual bool isWireframe() const = 0;
-    virtual bool isUnlit() const = 0;
-    virtual bool isDoubleSided() const = 0;*/
+    //virtual const std::string& textureName() const = 0;
+    //virtual bool useDiffuseColor() const = 0;
+    //virtual bool isTranslucent() const = 0;
+    virtual bool isWireframe() = 0;
+    //virtual bool isUnlit() const = 0;
+    //virtual bool isDoubleSided() const = 0;
 };
 }

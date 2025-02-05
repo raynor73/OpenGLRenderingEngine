@@ -23,7 +23,8 @@ Demo1::Demo1(GLFWwindow *window) :
 	m_openGLRenderingEngine(make_shared<RenderingEngine::OpenGLRenderingEngine>(m_openGLErrorDetector, m_shaderRepository, m_shaderSourcePreprocessor)),
 	m_yAngle(0),
 	m_xAngle(0),
-	m_zAngle(0)
+	m_zAngle(0),
+    m_isWireframe(false)
 {
     m_verticalPlaneMesh = make_shared<Mesh>();
     *m_verticalPlaneMesh = m_meshLoader->loadMesh("./Meshes/VerticalPlane.obj");
@@ -31,7 +32,7 @@ Demo1::Demo1(GLFWwindow *window) :
     m_transformation = make_shared<Research::Transformation>();
     m_transformation->setPosition(glm::vec3(0, 0, -1));
 
-    m_material = make_shared<Research::Material>(glm::vec4(1));
+    m_material = make_shared<Research::Material>(glm::vec4(1), false);
 
     m_openGLRenderingEngine->createRenderableMesh(*m_verticalPlaneMesh, m_transformation, m_material, { DEFAULT_LAYER_NAME });
 
@@ -61,6 +62,7 @@ void Demo1::update() {
     ImGui::SliderAngle("Y angle", &m_yAngle);
     ImGui::SliderAngle("X angle", &m_xAngle);
     ImGui::SliderAngle("Z angle", &m_zAngle);
+    ImGui::Checkbox("Wireframe", &m_isWireframe);
     ImGui::End();
 
     int windowWidth, windowHeight;
@@ -69,6 +71,7 @@ void Demo1::update() {
     m_camera->setViewportSize(glm::uvec2(windowWidth, windowHeight));
 
     m_transformation->setRotation(glm::quat(glm::vec3(m_xAngle, m_yAngle, m_zAngle)));
+    m_material->setWireframe(m_isWireframe);
 
     m_openGLRenderingEngine->render(*m_camera, m_ambient, m_lights);
 }

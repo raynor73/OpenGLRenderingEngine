@@ -264,8 +264,15 @@ void OpenGLRenderingEngine::renderMesh(
         material->diffuseColor().a
     );
 
+    GLenum mode = 0;
+    if (material->isWireframe()) {
+        mode = GL_LINE_STRIP;
+    } else {
+        mode = GL_TRIANGLES;
+    }
+
     glDrawElements(
-        GL_TRIANGLES,
+        mode,
         mesh->iboInfo().numberOfIndices,
         GL_UNSIGNED_SHORT,
         reinterpret_cast<void *>(0)
@@ -334,22 +341,5 @@ void OpenGLRenderingEngine::render(
         }
     }
     
-    /*for (auto meshEntry : m_renderableMeshes) {
-
-        renderMesh(camera, ambient, vpMatrix, meshEntry.second);
-
-        glEnable(GL_BLEND);
-        glDepthMask(GL_FALSE);
-        glDepthFunc(GL_EQUAL);
-
-        for (auto light : lights) {
-            renderMesh(camera, light, vpMatrix, meshEntry.second);
-        }
-
-        glDisable(GL_BLEND);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);
-    }*/
-
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
 }
