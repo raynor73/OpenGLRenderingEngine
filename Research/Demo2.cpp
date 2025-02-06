@@ -28,15 +28,8 @@ Demo2::Demo2(GLFWwindow *window) :
     m_isUnlit(false),
     m_isDoubleSided(false)
 {
-    m_sphereMesh = make_shared<Mesh>();
-    *m_sphereMesh = m_meshLoader->loadMesh("./Meshes/Sphere.obj");
-    
-    m_transformation = make_shared<Research::Transformation>();
-    m_transformation->setPosition(glm::vec3(0, 0, -2));
-
-    m_material = make_shared<Research::Material>(glm::vec4(1), false, false, false);
-
-    m_openGLRenderingEngine->createRenderableMesh(*m_sphereMesh, m_transformation, m_material, { DEFAULT_LAYER_NAME });
+    createSphere();
+    createPlane();
 
     int windowWidth, windowHeight;
     glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
@@ -56,7 +49,6 @@ Demo2::Demo2(GLFWwindow *window) :
 }
 
 void Demo2::update() {
-    //ImGui::ShowDemoWindow();
     ImGuiIO &io = ImGui::GetIO();
 
     ImGui::Begin("Hello, world!");
@@ -67,6 +59,7 @@ void Demo2::update() {
     ImGui::Checkbox("Wireframe", &m_isWireframe);
     ImGui::Checkbox("Unlit", &m_isUnlit);
     ImGui::Checkbox("Double-sided", &m_isDoubleSided);
+    ImGui::Checkbox("Translucent", &m_isTranslucent);
     ImGui::End();
 
     int windowWidth, windowHeight;
@@ -78,6 +71,23 @@ void Demo2::update() {
     m_material->setWireframe(m_isWireframe);
     m_material->setUnlit(m_isUnlit);
     m_material->setDoubleSided(m_isDoubleSided);
+    m_material->setTranslucent(m_isTranslucent);
 
     m_openGLRenderingEngine->render(*m_camera, m_ambient, m_lights);
+}
+
+void Demo2::createPlane() {
+
+}
+
+void Demo2::createSphere() {
+    m_sphereMesh = make_shared<Mesh>();
+    *m_sphereMesh = m_meshLoader->loadMesh("./Meshes/Sphere.obj");
+
+    m_transformation = make_shared<Research::Transformation>();
+    m_transformation->setPosition(glm::vec3(0, 0, -2));
+
+    m_material = make_shared<Research::Material>(glm::vec4(1), false, false, false, false);
+
+    m_openGLRenderingEngine->createRenderableMesh(*m_sphereMesh, m_transformation, m_material, { DEFAULT_LAYER_NAME });
 }

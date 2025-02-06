@@ -42,6 +42,10 @@ class Demo2 {
     bool m_isWireframe;
     bool m_isUnlit;
     bool m_isDoubleSided;
+    bool m_isTranslucent;
+
+    void createPlane();
+    void createSphere();
 
 public:
     Demo2(GLFWwindow *window);
