@@ -33,9 +33,16 @@ class Demo2 {
     std::shared_ptr<Mesh> m_sphereMesh;
     std::shared_ptr<Transformation> m_transformation;
     std::shared_ptr<Material> m_material;
+
+    std::shared_ptr<Mesh> m_planeMesh;
+    std::shared_ptr<Transformation> m_planeTransformation;
+    std::shared_ptr<Material> m_planeMaterial;
+
     std::shared_ptr<PerspectiveCamera> m_camera;
+
     RenderingEngine::Light m_ambient;
     std::vector<RenderingEngine::Light> m_lights;
+
     float m_yAngle;
     float m_xAngle;
     float m_zAngle;

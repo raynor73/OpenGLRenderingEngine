@@ -77,7 +77,16 @@ void Demo2::update() {
 }
 
 void Demo2::createPlane() {
+    m_planeMesh = make_shared<Mesh>();
+    *m_planeMesh = m_meshLoader->loadMesh("./Meshes/VerticalPlane.obj");
 
+    m_planeTransformation = make_shared<Research::Transformation>();
+    m_planeTransformation->setPosition(glm::vec3(0, 0, -4));
+    m_planeTransformation->setScale(glm::vec3(5, 5, 1));
+
+    m_planeMaterial = make_shared<Research::Material>(glm::vec4(1), false, false, false, false);
+
+    m_openGLRenderingEngine->createRenderableMesh(*m_planeMesh, m_planeTransformation, m_planeMaterial, { DEFAULT_LAYER_NAME });
 }
 
 void Demo2::createSphere() {
