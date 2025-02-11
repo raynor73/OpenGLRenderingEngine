@@ -388,7 +388,7 @@ void OpenGLRenderingEngine::renderMeshWithAllLightShaders(
 ) {
     if (mesh->material()->isTranslucent()) {
         glEnable(GL_BLEND);
-        //glBlendFunc(GL_ONE, GL_DST_ALPHA);
+        glDepthMask(GL_FALSE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
     
@@ -396,6 +396,7 @@ void OpenGLRenderingEngine::renderMeshWithAllLightShaders(
 
     if (mesh->material()->isTranslucent()) {
         glDisable(GL_BLEND);
+        glDepthMask(GL_TRUE);
     }
 
     if (mesh->material()->isUnlit()) {
@@ -403,7 +404,11 @@ void OpenGLRenderingEngine::renderMeshWithAllLightShaders(
     }
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
+    if (mesh->material()->isTranslucent()) {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glBlendFunc(GL_ONE, GL_ONE);
+    }
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_EQUAL);
 

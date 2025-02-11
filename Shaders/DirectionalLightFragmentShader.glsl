@@ -42,7 +42,7 @@ void calcColor(out vec4 resultColor) {
     //if (useDiffuseColorUniform) {
     resultColor =
         diffuseColorUniform * vec4(directionalLightUniform.base.color, 1.0) *
-        dot(normalize(normalVarying), -directionalLightUniform.direction) * directionalLightUniform.base.intensity;
+        vec4(vec3(dot(normalize(normalVarying), -directionalLightUniform.direction) * directionalLightUniform.base.intensity), 1.0);
     /*} else {
         resultColor =
         texture2D(textureUniform, uvVarying) * vec4(directionalLightUniform.color, 1.0) *
