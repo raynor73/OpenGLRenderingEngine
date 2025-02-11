@@ -96,7 +96,7 @@ void Demo2::createSphere() {
     m_transformation = make_shared<Research::Transformation>();
     m_transformation->setPosition(glm::vec3(0, 0, -2));
 
-    m_material = make_shared<Research::Material>(glm::vec4(1), false, false, false, false);
+    m_material = make_shared<Research::Material>(glm::vec4(1, 1, 1, 0.5), false, false, false, false);
 
     m_openGLRenderingEngine->createRenderableMesh(*m_sphereMesh, m_transformation, m_material, { DEFAULT_LAYER_NAME });
 }

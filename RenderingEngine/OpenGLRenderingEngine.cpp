@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <set>
 
 using namespace RenderingEngine;
 using namespace std;
@@ -23,6 +24,17 @@ const string OpenGLRenderingEngine::UNLIT_SHADER_PROGRAM_NAME = "UnlitShader";
 
 const GLuint OpenGLRenderingEngine::POSITION_ATTRIBUTE_LOCATION = 0;
 const GLuint OpenGLRenderingEngine::NORMAL_ATTRIBUTE_LOCATION = 1;
+
+struct TranslucentMeshEntry {
+    shared_ptr<RenderableMeshInternal> mesh;
+    float zDistanceToCamera;
+};
+
+struct DescendingOrder {
+    bool operator()(TranslucentMeshEntry a, TranslucentMeshEntry b) const {
+        return a.zDistanceToCamera > b.zDistanceToCamera;
+    }
+};
 
 OpenGLRenderingEngine::OpenGLRenderingEngine(
     shared_ptr<OpenGLErrorDetector> openGLErrorDetector,
@@ -58,10 +70,6 @@ OpenGLRenderingEngine::OpenGLRenderingEngine(
 
     glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CCW);
-    //glEnable(GL_CULL_FACE);
-    glBlendFunc(GL_ONE, GL_ONE);
-
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void OpenGLRenderingEngine::initShader(
@@ -201,7 +209,8 @@ void OpenGLRenderingEngine::freeRenderableMesh(uint32_t id) {
 void OpenGLRenderingEngine::renderMesh(
     Camera &camera,
     Light &light,
-    const glm::mat4 &vpMatrix,
+    const glm::mat4 &modelMatrix,
+    const glm::mat4 &viewProjectionMatrix,
     shared_ptr<RenderableMeshInternal> mesh
 ) {
     shared_ptr<OpenGLShaderProgramContainer> shader;
@@ -253,15 +262,9 @@ void OpenGLRenderingEngine::renderMesh(
         throw domain_error(ss.str());
     }
 
-    auto transformation = mesh->transformation();
-
     glBindVertexArray(mesh->vao());
 
-    auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
-    modelMatrix *= glm::toMat4(transformation->rotation());
-    modelMatrix = glm::scale(modelMatrix, transformation->scale());
-
-    auto mvpMatrix = vpMatrix * modelMatrix;
+    auto mvpMatrix = viewProjectionMatrix * modelMatrix;
     glUniformMatrix4fv(shader->mvpMatrixUniform(), 1, false, &mvpMatrix[0][0]);
     
     auto modelMatrixUniform = shader->modelMatrixUniform();
@@ -337,32 +340,78 @@ void OpenGLRenderingEngine::render(
         camera.scissorSize().y
     );
 
-    auto vpMatrix = camera.projectionMatrix() * camera.viewMatrix();
+    auto viewProjectionMatrix = camera.projectionMatrix() * camera.viewMatrix();
+
+    multiset<TranslucentMeshEntry, DescendingOrder> translucentMeshes;
 
     for (auto cameraLayer : camera.layers()) {
         auto meshesRange = m_layerRenderableMeshes.equal_range(cameraLayer);
+
         for (auto it = meshesRange.first; it != meshesRange.second; it++) {
             auto mesh = m_renderableMeshes.find(it->second)->second;
 
-            renderMesh(camera, ambient, vpMatrix, mesh);
+            auto transformation = mesh->transformation();
+            auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
+            modelMatrix *= glm::toMat4(transformation->rotation());
+            modelMatrix = glm::scale(modelMatrix, transformation->scale());
 
-            if (mesh->material()->isUnlit()) {
-                continue;
+            if (mesh->material()->isTranslucent()) {
+                auto meshOriginInViewCoordinates = modelMatrix * glm::vec4(transformation->position(), 1);
+                translucentMeshes.insert({ mesh, meshOriginInViewCoordinates.z });
+            } else {
+                renderMeshWithAllLightShaders(camera, ambient, lights, modelMatrix, viewProjectionMatrix, mesh);
             }
-
-            glEnable(GL_BLEND);
-            glDepthMask(GL_FALSE);
-            glDepthFunc(GL_EQUAL);
-
-            for (auto light : lights) {
-                renderMesh(camera, light, vpMatrix, mesh);
-            }
-
-            glDisable(GL_BLEND);
-            glDepthMask(GL_TRUE);
-            glDepthFunc(GL_LESS);
         }
     }
-    
+
+    for (auto translucentMeshEntry : translucentMeshes) {
+        auto mesh = translucentMeshEntry.mesh;
+
+        auto transformation = mesh->transformation();
+        auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), transformation->position());
+        modelMatrix *= glm::toMat4(transformation->rotation());
+        modelMatrix = glm::scale(modelMatrix, transformation->scale());
+
+        renderMeshWithAllLightShaders(camera, ambient, lights, modelMatrix, viewProjectionMatrix, mesh);
+    }
+
     m_openGLErrorDetector->checkOpenGLErrors("OpenGLRenderingEngine::render");
+}
+
+void OpenGLRenderingEngine::renderMeshWithAllLightShaders(
+    Camera &camera,
+    Light &ambient,
+    const std::vector<Light> &lights,
+    const glm::mat4 &modelMatrix,
+    const glm::mat4 &viewProjectionMatrix,
+    std::shared_ptr<RenderableMeshInternal> mesh
+) {
+    if (mesh->material()->isTranslucent()) {
+        glEnable(GL_BLEND);
+        //glBlendFunc(GL_ONE, GL_DST_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    
+    renderMesh(camera, ambient, modelMatrix, viewProjectionMatrix, mesh);
+
+    if (mesh->material()->isTranslucent()) {
+        glDisable(GL_BLEND);
+    }
+
+    if (mesh->material()->isUnlit()) {
+        return;
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glDepthMask(GL_FALSE);
+    glDepthFunc(GL_EQUAL);
+
+    for (auto light : lights) {
+        renderMesh(camera, light, modelMatrix, viewProjectionMatrix, mesh);
+    }
+
+    glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
 }

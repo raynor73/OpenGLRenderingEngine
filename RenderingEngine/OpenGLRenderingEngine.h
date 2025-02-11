@@ -51,7 +51,17 @@ namespace RenderingEngine {
 		void renderMesh(
 			Camera &camera, 
 			Light &light,
-			const glm::mat4 &vpMatrix, 
+			const glm::mat4 &modelMatrix,
+			const glm::mat4 &vpMatrix,
+			std::shared_ptr<RenderableMeshInternal> mesh
+		);
+
+		void renderMeshWithAllLightShaders(
+			Camera &camera, 
+			Light &ambient,
+			const std::vector<Light> &lights,
+			const glm::mat4 &modelMatrix,
+			const glm::mat4 &viewProjectionMatrix,
 			std::shared_ptr<RenderableMeshInternal> mesh
 		);
 
